@@ -46,7 +46,7 @@ void cr_register_cleanup_wrapper(
 			cr_registered_atexit = true;
 		}
 	}
-	if ( argument_pointer ) cr_current_handle.argument_pointer = argument_pointer;
+	if ( argument_pointer != NULL ) cr_current_handle.argument_pointer = argument_pointer;
 }
 
 /* Function:
