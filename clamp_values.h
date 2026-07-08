@@ -29,22 +29,22 @@
  * for floating-point types: if minimum, maximum or value isn't finite - return unchanged value
  */
 
-static inline int64_t clamp_int64_t( int64_t value, int64_t minimum, int64_t maximum ) {
+static inline int64_t cv_clamp_int64_t( int64_t value, int64_t minimum, int64_t maximum ) {
 	assert_m( minimum <= maximum, "Minimum must be less than or equal to the maximum" );
 	return (value < minimum) ? minimum : (value > maximum) ? maximum : value;
 }
 
-static inline uint64_t clamp_uint64_t( uint64_t value, uint64_t minimum, uint64_t maximum ) {
+static inline uint64_t cv_clamp_uint64_t( uint64_t value, uint64_t minimum, uint64_t maximum ) {
 	assert_m( minimum <= maximum, "Minimum must be less than or equal to the maximum" );
 	return (value < minimum) ? minimum : (value > maximum) ? maximum : value;
 }
 
-static inline size_t clamp_size_t( size_t value, size_t minimum, size_t maximum ) {
+static inline size_t cv_clamp_size_t( size_t value, size_t minimum, size_t maximum ) {
 	assert_m( minimum <= maximum, "Minimum must be less than or equal to the maximum" );
 	return (value < minimum) ? minimum : (value > maximum) ? maximum : value;
 }
 
-static inline float clamp_float( float value, float minimum, float maximum ) {
+static inline float cv_clamp_float( float value, float minimum, float maximum ) {
 	assert_m(
 		isfinite(minimum) && isfinite(maximum) && isfinite(value),
 		"Numbers to clamp must be finite"
@@ -54,7 +54,7 @@ static inline float clamp_float( float value, float minimum, float maximum ) {
 	return (value < minimum) ? minimum : (value > maximum) ? maximum : value;
 }
 
-static inline double clamp_double( double value, double minimum, double maximum ) {
+static inline double cv_clamp_double( double value, double minimum, double maximum ) {
 	assert_m(
 		isfinite(minimum) && isfinite(maximum) && isfinite(value),
 		"Numbers to clamp must be finite"
@@ -64,7 +64,7 @@ static inline double clamp_double( double value, double minimum, double maximum 
 	return (value < minimum) ? minimum : (value > maximum) ? maximum : value;
 }
 
-static inline long double clamp_long_double(
+static inline long double cv_clamp_long_double(
 		long double value, long double minimum, long double maximum
 	)
 {
