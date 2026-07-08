@@ -17,4 +17,10 @@ Inline clamping functions
 Supported types: int64_t, uint64_t, size_t, float, double, long double  
 For narrower integers (int32 and others) you can safely cast to the corresponding supported type (or there will be implicit conversion which isn't recommended)  
 
+#cleanup_register
+Register a cleanup function with optional argument to be called at program exit via `atexit`.  
+- Supports **one** registered function with a single void * argument. Subsequent calls with a new function pointer are ignored
+- The **argument pointer** can be updated at any time by calling function without a function_pointer
+- At least one of the pointers must be non-`NULL` (enforced in debug builds)
+- Requires C99.
 License: Apache 2.0, Version 2.0
