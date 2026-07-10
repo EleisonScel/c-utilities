@@ -129,6 +129,10 @@ void * am_aligned_malloc( size_t alignment, size_t size ) {
 #endif /* AM_BACKEND_STANDARD AM_BACKEND_POSIX AM_BACKEND_WINDOWS ... */
 
 #ifdef AM_BACKEND_WINDOWS
+	assert_mf(
+		size <= SIZE_MAX - sizeof(struct AM_Alignment_Header_Info),
+		"Size of block for allocation shouldn't be that big (size: %zu)", size
+	);
 	if ( size > SIZE_MAX - sizeof(struct AM_Alignment_Header_Info) )
 		return NULL;
 
@@ -136,20 +140,43 @@ void * am_aligned_malloc( size_t alignment, size_t size ) {
 
 	const size_t header_information_size_aligned =
 		(sizeof(struct AM_Alignment_Header_Info) + alignment - 1) & ~(size_t)(alignment - 1);
+
+	assert_mf(
+		size <= SIZE_MAX - header_information_size_aligned,
+		"Allocation size must leave space for the information (size: %zu, information: %zu)",
+		size, header_information_size_aligned
+	);
 	if ( size > SIZE_MAX - header_information_size_aligned )
 		return NULL;
+	assert_mf(
+		size + header_information_size_aligned <= SIZE_MAX - (alignment - 1),
+		"Allocation alignment isn't valid for this size (size: %zu, alignment: %zu)",
+		size + header_information_size_aligned, alignment
+	);
 	if ( size + header_information_size_aligned > SIZE_MAX - (alignment - 1) )
 		return NULL;
 
 #else /* FALLBACK */
 
+	assert_mf(
+		alignment <= SIZE_MAX - sizeof(struct AM_Alignment_Header_Info) + 1,
+		"Allocation alignment must leave space for the information "
+		"(alignment: %zu , information: %zu)",
+		alignment, sizeof(struct AM_Alignment_Header_Info)
+	);
 	if ( alignment > SIZE_MAX - sizeof(struct AM_Alignment_Header_Info) + 1 )
 		return NULL;
+
 	size_t header_information_size_required =
 		alignment - 1 + sizeof(struct AM_Alignment_Header_Info);
-
+	assert_mf(
+		header_information_size_required <= SIZE_MAX - size,
+		"Allocation size must leave space for the required overhead (size: %zu, overhead: %zu)",
+		size, header_information_size_required
+	);
 	if ( header_information_size_required > SIZE_MAX - size )
 		return NULL;
+
 #endif /* AM_BACKEND_WINDOWS */
 
 	void * raw_memory_pointer = NULL;
@@ -177,6 +204,31 @@ void * am_aligned_malloc( size_t alignment, size_t size ) {
 		"Computed aligned address is not aligned"
 	);
 #endif /* UINTPTR_MAX */
+	return result_pointer;
+}
+
+void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t element_size ) {
+	/* alignment check is located in the am_aligned_malloc function */
+	assert_m( elements_amount	!= 0, "Amount of elements for allocation shouldn't be zero"	);
+	assert_m( element_size		!= 0, "Element size shouldn't be zero, it's a divider"		);
+
+	if ( element_size == 0 || elements_amount == 0 )
+		return NULL;
+
+	assert_mf(
+		elements_amount <= SIZE_MAX / element_size,
+		"Size of block for allocation shouldn't be that big "
+		"(elements amount: %zu, element size: %zu)", elements_amount, element_size
+	);
+	if ( elements_amount > SIZE_MAX / element_size )
+		return NULL;
+
+	size_t total_bytes = elements_amount * element_size;
+	void * result_pointer = am_aligned_malloc( alignment, total_bytes );
+	if ( result_pointer == NULL )
+		return NULL;
+
+	memset( result_pointer, 0, total_bytes );
 	return result_pointer;
 }
 
@@ -362,7 +414,7 @@ void am_aligned_free( void * restrict pointer ) {
  * correct arguments
  *
  * Parameters:
- * alignment				- desired address alignment (POSIX: multiple of pointer size)
+ * alignment				- desired address alignment
  * size						- size of memory block to allocate
  * out_raw_memory_pointer	- original memory block pointer
  *
