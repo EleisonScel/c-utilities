@@ -1,4 +1,4 @@
-/* Copyright 2026 EleisonScel
+/* Copyright 2026 EleisonNox
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,28 +32,32 @@
  *	- AM_BACKEND_WINDOWS	: alignment must be a power of two,
  *							. _WIN32,
  *							. C99
- *	- AM_BACKEND_POSIX		: alignment must be a power of two,
+ *	- AM_BACKEND_POSIX		: alignment must be a power of two and a multiple of a pointer size,
  *							. _POSIX_C_SOURCE >= 200112L
  *							. C99
  *	- AM_BACKEND_STANDARD	: alignment must be a power of two,
  *							. C11,
  *							. non-Windows system
- *	- AM_BACKEND_FALLBACK	: sizeof(void *) must be a power of two (fast way)
- *								if that isn't power of two requires
- *								AM_ALLOW_NON_POWER_OF_TWO_POINTER to make it work properly
+ *	- AM_BACKEND_FALLBACK	:
+ *		- default (AM_ALIGN_BITWISE = 1)					:
+ *								: pointer size and alignment must be a power of two
+ *		- with AM_ALLOW_NON_POWER_OF_TWO_ALIGNMENT defined	:
+ *								: any non-zero alignment allowed
+ *									(uses a slower division-based method)
  *							. uintptr_t
  *							. C99
  *
  * Available user macro definition before including the header:
- *	- AM_FORCE_WINDOWS					: force Windows backend
- *	- AM_FORCE_POSIX					: force POSIX backend
- *	- AM_FORCE_C11						: force C11 backend
- *	- AM_FORCE_FALLBACK					: force fallback backend
- *	- AM_ALLOW_NON_POWER_OF_TWO_POINTER	: allow non-power-of-two alignment in AM_BACKEND_FALLBACK
+ *	- AM_FORCE_WINDOWS						: force Windows backend
+ *	- AM_FORCE_POSIX						: force POSIX backend
+ *	- AM_FORCE_C11							: force C11 backend
+ *	- AM_FORCE_FALLBACK						: force fallback backend
+ *	- AM_ALLOW_NON_POWER_OF_TWO_ALIGNMENT	: allow non-power-of-two alignment in
+ *												(AM_BACKEND_FALLBACK only)
  */
 
 /* Function:
- * release a raw memory block allocated with an am_aligned_allocation
+ * release a raw memory block allocated with an am_aligned_malloc
  *
  * Parameters:
  * pointer	- pointer to memory block previously allocated with an am_aligned_malloc
@@ -64,7 +68,7 @@ void am_aligned_free( void * restrict pointer );
  * allocate aligned memory block
  *
  * Parameters:
- * alignment				- desired address alignment (at least sizeof(void *))
+ * alignment				- desired address alignment
  * size						- size of memory block to allocate in bytes
  *
  * Returns:
@@ -72,7 +76,6 @@ void am_aligned_free( void * restrict pointer );
  * NULL						- invalid arguments or allocation failure
  */
 void * am_aligned_malloc( size_t alignment, size_t size );
-
 /* Function:
  * reallocate aligned memory block
  *
@@ -89,5 +92,19 @@ void * am_aligned_malloc( size_t alignment, size_t size );
  * NULL						- invalid arguments or failed to allocate memory block
  */
 void * am_aligned_realloc( void * restrict pointer, size_t size_new );
+/* Function:
+ * allocate zero-initialized aligned memory for an array
+ *
+ * Parameters:
+ * alignment		- desired address alignment
+ * elements_amount	- amount of elements
+ * element_size		- size of each element
+ *
+ * Returns:
+ * pointer			- zero-filled aligned memory was allocated
+ *						(must be released with am_aligned_free)
+ * NULL				- invalid arguments, potential overflow or allocation failure
+ */
+void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t element_size );
 
 #endif/* ALIGNED_MEMORY_H */
