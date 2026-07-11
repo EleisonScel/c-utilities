@@ -70,32 +70,64 @@ void am_aligned_free( void * restrict pointer );
  * allocate aligned memory block
  *
  * Parameters:
+ * alignment	- desired address alignment
+ * size			- size of memory block to allocate in bytes
+ *
+ * Returns:
+ * pointer		- block was allocated (must be released with am_aligned_free)
+ * NULL			- invalid arguments or allocation failure
+ */
+void * am_aligned_malloc( size_t alignment, size_t size );
+/* Function:
+ * safe version of am_aligned_malloc
+ *
+ * Parameters:
  * alignment		- desired address alignment
- * size				- size of memory block to allocate in bytes
+ * elements_amount	- new amount of elements
+ * element_size		- size of each element
  *
  * Returns:
  * pointer			- block was allocated (must be released with am_aligned_free)
- * NULL				- invalid arguments or allocation failure
+ * NULL				- potential overflow, invalid arguments or allocation failure
  */
-void * am_aligned_malloc( size_t alignment, size_t size );
+void * am_aligned_malloc_array( size_t alignment, size_t elements_amount, size_t element_size );
+#	ifndef AM_NO_REALLOC
 /* Function:
  * reallocate aligned memory block
  *
  * Precondition:
+ * pointer		- must be previously allocated with an am_aligned_malloc
+ * size_new		- must be positive
+ *
+ * Parameters:
+ * pointer		- existing aligned memory block
+ * size_new		- size of desired memory block to reallocate
+ *
+ * Returns:
+ * pointer		- block was reallocated
+ * NULL			- invalid arguments or failed to allocate memory block
+ */
+void * am_aligned_realloc( void * restrict pointer, size_t size_new );
+/* Function:
+ * safe version of am_aligned_realloc
+ *
+ * Precondition:
  * pointer			- must be previously allocated with an am_aligned_malloc
- * size_new			- must be positive
+ * elements_amount	- must be positive
+ * element_size		- must be positive
  *
  * Parameters:
  * pointer			- existing aligned memory block
- * size_new			- size of desired memory block to reallocate
+ * elements_amount	- amount of elements
+ * element_size		- size of each element
  *
  * Returns:
  * pointer			- block was reallocated
- * NULL				- invalid arguments or failed to allocate memory block
+ * NULL				- invalid arguments, overflow or failed to allocate memory block
  */
-#	ifndef AM_NO_REALLOC
-void * am_aligned_realloc( void * restrict pointer, size_t size_new );
+void * am_aligned_realloc_array( void * restrict pointer, size_t elements_amount, size_t element_size );
 #	endif /* AM_NO_REALLOC */
+#	ifndef AM_NO_CALLOC
 /* Function:
  * allocate zero-initialized aligned memory for an array
  *
@@ -109,7 +141,6 @@ void * am_aligned_realloc( void * restrict pointer, size_t size_new );
  *						(must be released with am_aligned_free)
  * NULL				- invalid arguments, potential overflow or allocation failure
  */
-#	ifndef AM_NO_CALLOC
 void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t element_size );
 #	endif /* AM_NO_CALLOC */
 
