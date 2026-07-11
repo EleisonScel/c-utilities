@@ -256,6 +256,7 @@ void * am_aligned_malloc_array( size_t alignment, size_t elements_amount, size_t
 }
 
 #ifndef AM_NO_CALLOC
+
 void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t element_size ) {
 	size_t total_bytes = am_check_array_bounds( elements_amount, element_size );
 	if ( total_bytes == 0 )
@@ -268,6 +269,7 @@ void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t eleme
 	memset( result_pointer, 0, total_bytes );
 	return result_pointer;
 }
+
 #endif /* AM_NO_CALLOC */
 
 #ifndef AM_NO_REALLOC
