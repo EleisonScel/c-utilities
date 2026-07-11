@@ -80,6 +80,11 @@ Safe wrappers for all OpenGL functions that may set an error state; zero overhea
 > Functions return `bool`. In release builds they always `true`; in debug they validate arguments and return result of OpenGL error checking.  
 > Requires OpenGL and GLEW.  
 
+### create_shader_program
+Create OpenGL shader program from vertex and fragment sources.
+- `csp_create_shader_program` - create a shader program from a single fragment and single vertex shader source code string.
+- `csp_create_shader_program_many_sources` - creates a program from one or more vertex and fragment source strings.
+
 ---
 
 **License**: Apache 2.0
