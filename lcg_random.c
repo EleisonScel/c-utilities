@@ -110,7 +110,7 @@ static uint64_t lcg_get_bits_64( int bits ) {
 			bits_left	= 64;
 		}
 		int take		= bits < bits_left ? bits : bits_left;
-		uint64_t mask	= (take == 64) ? ~0ULL : ((1ULL << take) - 1 );
+		uint64_t mask	= (take == 64) ? UINT64_MAX : (((uint64_t)1 << take) - 1 );
 		result			= (result << take) | (buffer & mask);
 		buffer			>>= take;
 		bits_left		-= take;
