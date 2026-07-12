@@ -48,7 +48,7 @@ static struct WOEM_Error_Handle {
 } current_error_handle = { 0 };
 
 static bool woem_write_out_error_message( char ** restrict out_error_message, const char * restrict format_pointer, va_list arguments );
-static bool woem_store_error_message( char * error_message_pointer, bool must_be_freed );
+static bool woem_store_error_message( char * restrict error_message_pointer, bool must_be_freed );
 static bool woem_ensure_capacity( void );
 
 bool woem_push( const char * restrict format_pointer, ... ) {
@@ -174,7 +174,7 @@ char * woem_pop( bool * restrict out_must_be_freed_pointer ) {
  * true						- error message saved
  * false					- out of memory (if the string is heap-allocated, it's freed)
  */
-static bool woem_store_error_message( char * error_message_pointer, bool must_be_freed ) {
+static bool woem_store_error_message( char * restrict error_message_pointer, bool must_be_freed ) {
 	assert_m( error_message_pointer != NULL, "No error message found" );
 	if ( current_error_handle.amount < WOEM_STATIC_CAPACITY ) {
 		current_error_handle.static_array[current_error_handle.amount].error_message_pointer =
