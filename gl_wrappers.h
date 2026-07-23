@@ -15,13 +15,16 @@
 
 #pragma once
 
-#include "gl_utils.h"
-#include "assert_m.h"
+#ifndef GL_WRAPPERS_H
+#define GL_WRAPPERS_H
 
-#include <stdbool.h>
+#	include "gl_utils.h" /* gl_errors_clean	*/
+#	include "assert_m.h" /* assert_m		*/
 
-#include <GL/glew.h>
-#include <GL/gl.h>
+#	include <stdbool.h> /* bool */
+
+#	include <GL/glew.h>	/* GLenum			*/
+#	include <GL/gl.h>	/* glCreateShader	*/
 
 static inline bool glCreateShader_wrapped( GLenum shader_type, GLuint * out_shader )
 {
@@ -166,3 +169,5 @@ static inline bool glDeleteProgram_wrapped( GLuint program ) {
 
 #endif/*NDEBUG*/
 }
+
+#endif /* GL_WRAPPERS_H */
