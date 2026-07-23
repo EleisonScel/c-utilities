@@ -18,7 +18,7 @@
 #ifndef WOEM_WRITE_OUT_ERROR_MESSAGE_H
 #define	WOEM_WRITE_OUT_ERROR_MESSAGE_H
 
-#include <stdbool.h>	/* bool	*/
+#  include <stdbool.h>	/* bool	*/
 
 /* Function:
  * free all collected error messages and reset storage which should NOT happen
