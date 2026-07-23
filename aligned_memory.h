@@ -24,7 +24,7 @@
 #ifndef ALIGNED_MEMORY_H
 #define ALIGNED_MEMORY_H
 
-#include <stddef.h> /* size_t */
+#  include <stddef.h> /* size_t */
 
 /* Logic to choose the alignment backend
  *
