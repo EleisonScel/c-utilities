@@ -19,7 +19,6 @@
 #define CSP_CREATE_SHADER_PROGRAM_H
 
 #  include <GL/glew.h>  /* GLuint */
-#  include <GL/gl.h>
 
 /* Function:
  * create a shader program from a single shader source string
