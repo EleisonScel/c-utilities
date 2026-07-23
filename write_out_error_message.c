@@ -15,14 +15,14 @@
 
 #include "write_out_error_message.h"
 
-#include "dynamic_array.h"
-#include "assert_m.h"
+#include "dynamic_array.h"	/* da_dynamic_array_shrink	*/
+#include "assert_m.h"		/* assert_m					*/
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include <stdarg.h>	/* va_list	*/
+#include <stddef.h>	/* size_t	*/
+#include <stdbool.h>/* bool		*/
+#include <stdio.h>	/* vsnprintf*/
+#include <stdlib.h>	/* malloc	*/
 
 #include <string.h>
 
