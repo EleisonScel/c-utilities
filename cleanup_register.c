@@ -15,10 +15,10 @@
 
 #include "cleanup_register.h"
 
-#include "assert_m.h"
+#include "assert_m.h"	/* assert_m */
 
-#include <stdlib.h>		/*	atexit	*/
-#include <stdbool.h>	/*	bool	*/
+#include <stdlib.h>		/* atexit	*/
+#include <stdbool.h>	/* bool		*/
 
 static struct CR_Cleanup_Handle {
 	void (* function_pointer)( void * );
@@ -57,6 +57,6 @@ static void cr_cleanup_wrapper(void) {
 		cr_current_handle.function_pointer != NULL && cr_registered_atexit == true,
 		"Invalid exit callback state"
 	);
-	if ( cr_current_handle.function_pointer )
+	if ( cr_current_handle.function_pointer != NULL )
 		(*cr_current_handle.function_pointer)( cr_current_handle.argument_pointer );
 }
