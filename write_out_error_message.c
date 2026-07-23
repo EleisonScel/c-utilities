@@ -78,7 +78,7 @@ bool woem_push_raw( char * restrict error_message_pointer ) {
 
 void woem_clear(void) {
 	/* clean the dynamic error messages */
-	if ( current_error_handle.dynamic_array ) {
+	if ( current_error_handle.dynamic_array != NULL ) {
 		assert_m(
 			current_error_handle.amount > WOEM_STATIC_CAPACITY,
 			"Dynamic error messages shouldn't exist when static space suffices"
@@ -184,7 +184,7 @@ static bool woem_store_error_message( char * restrict error_message_pointer, boo
 		goto out;
 	}
 
-	if ( !woem_ensure_capacity() ) {
+	if ( woem_ensure_capacity() == false ) {
 		if ( must_be_freed == true ) free( error_message_pointer );
 		return false;
 	}
@@ -219,11 +219,11 @@ static bool woem_write_out_error_message(
 	char * buffer_pointer = NULL;
 	int written = 0, chars_needed = 0;
 
-	if ( !out_error_message ) goto cleanup;
+	if ( out_error_message == NULL ) goto cleanup;
 	*out_error_message = NULL;
 
 	assert_m( format_pointer != NULL, "No error message specified" );
-	if ( !format_pointer ) {
+	if ( format_pointer == NULL ) {
 		*out_error_message = woem_error_no_message;
 		goto cleanup;
 	}
@@ -240,7 +240,7 @@ static bool woem_write_out_error_message(
 	}
 
 	buffer_pointer = malloc( ((size_t)chars_needed + 1) * sizeof(*buffer_pointer) );
-	if ( !buffer_pointer ) {
+	if ( buffer_pointer == NULL ) {
 		*out_error_message = woem_error_malloc_failed;
 		goto cleanup;
 	}
