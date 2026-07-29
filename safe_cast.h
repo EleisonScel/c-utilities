@@ -15,7 +15,7 @@
 
 /* Portable overflow-checked integer conversions.
  *
- * Every sa_ovf_<source>_to_<destination_pointer> function checks whether
+ * Every sa_ovf_<source>_to_<destination> function checks whether
  * a value of the source type fits into the destination type without
  * truncation, sign loss or undefined behaviour.
  *
