@@ -92,6 +92,15 @@ Fast and lightweight pseudo-random number generator with a minimal overhead, bas
 > **Bounded random numbers** - function calls lcg_rand32_max(max) and lcg_rand64_max(max) returns values in range of [0; max - 1].  
 > Requires C99.  
 
+### safe_cast
+Overflow-checked integer conversion between all standard integer types.
+
+- `sa_ovf_<source>_to_<destination>(type_from, * type_to_pointer)` - converts `type_from` to the destination type.   
+
+> return `true` if the value can not be represented in the destination type (or if destination pointer is `NULL`), `false` on success.   
+> `type_to_pointer` - must be not `NULL` (in debug builds)   
+> Requires C99   
+
 ---
 
 **License**: Apache 2.0
