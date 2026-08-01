@@ -15,7 +15,8 @@
 
 #include "aligned_memory.h"
 
-#include "assert_m.h"	/*	assert_m	*/
+#include "assert_m.h"			/* assert_m			*/
+#include "safe_multiplication.h"/* sa_ovf_mul_size_t*/
 
 #include <stddef.h>		/*	size_t		*/
 #include <stdint.h>		/*	SIZE_MAX	*/
@@ -256,7 +257,6 @@ void * am_aligned_malloc_array( size_t alignment, size_t elements_amount, size_t
 }
 
 #ifndef AM_NO_CALLOC
-
 void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t element_size ) {
 	size_t total_bytes = am_check_array_bounds( elements_amount, element_size );
 	if ( total_bytes == 0 )
@@ -269,11 +269,9 @@ void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t eleme
 	memset( result_pointer, 0, total_bytes );
 	return result_pointer;
 }
-
 #endif /* AM_NO_CALLOC */
 
 #ifndef AM_NO_REALLOC
-
 void * am_aligned_realloc_array(
 		void * restrict pointer, size_t elements_amount, size_t element_size
 	)
@@ -446,7 +444,6 @@ void * am_aligned_realloc( void * restrict pointer, size_t size_new ) {
 #		endif /* AM_BACKEND_POSIX */
 #	endif /* AM_BACKEND_WINDOWS */
 }
-
 #endif /* AM_NO_REALLOC */
 
 void am_aligned_free( void * restrict pointer ) {
@@ -596,16 +593,10 @@ static inline size_t am_check_array_bounds( size_t elements_amount, size_t eleme
 	assert_m( elements_amount	!= 0, "Amount of elements for allocation shouldn't be zero"	);
 	assert_m( element_size		!= 0, "Element size shouldn't be zero, it's a divider"		);
 
-	if ( element_size == 0 || elements_amount == 0 )
+	size_t total_bytes;
+	if( element_size == 0 || elements_amount == 0 ||
+		sa_ovf_mul_size_t(elements_amount, element_size, &total_bytes) == true )
 		return 0;
 
-	assert_mf(
-		elements_amount <= SIZE_MAX / element_size,
-		"Size of block for allocation shouldn't be that big "
-		"(elements amount: %zu, element size: %zu)", elements_amount, element_size
-	);
-	if ( elements_amount > SIZE_MAX / element_size )
-		return 0;
-
-	return elements_amount * element_size;
+	return total_bytes;
 }
