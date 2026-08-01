@@ -20,14 +20,16 @@
 
 #ifdef NDEBUG
 
-#	define	assert_m(	condition, message		) ((void) 0)
-#	define	assert_mf(	condition, format, ...	) ((void) 0)
+#	define assert_m(		condition, message		) ((void) 0)
+#	define assert_mf(		condition, format, ...	) ((void) 0)
+#	define assert_check_m(	condition, message		) ((condition) ? 1 : 0 )
+#	define assert_check_mf(	condition, format, ...	) ((condition) ? 1 : 0 )
 
 #else
 
-#	include <stdio.h>
-#	include <stdlib.h>
-#	include <stdarg.h>
+#	include <stdio.h>	/* fprintf	*/
+#	include <stdarg.h>	/* va_list	*/
+#	include <stdlib.h>	/* abort	*/
 
 /* noreturn */
 #	if defined __STDC_VERSION__ && (__STDC_VERSION__ + 0L) >= 202311L
@@ -114,13 +116,30 @@
 			? (void) 0						\
 			: assert_fail_m( __LINE__, #condition, (message), __FILE__, ASSERT_M_FUNCTION_NAME ))
 
+#	define assert_check_m( condition, message )										\
+		( (condition)																\
+			? 1																		\
+			: ( assert_fail_m(														\
+				__LINE__, #condition, (message), __FILE__, ASSERT_M_FUNCTION_NAME	\
+			), 0 ) )
+
 #	if defined __STDC_VERSION__ && (__STDC_VERSION__ + 0L) >= 199901L ||\
 		defined __GNUC__ || defined __clang__
-#		define assert_mf( condition, format, ... )	\
-			( (condition)							\
-			? (void) 0								\
-			: assert_fail_mf( __LINE__, #condition, __FILE__, ASSERT_M_FUNCTION_NAME,\
-				(format), __VA_ARGS__ ))
+
+#		define assert_mf( condition, format, ... )											\
+			( (condition)																	\
+				? (void) 0																	\
+				: assert_fail_mf( __LINE__, #condition, __FILE__, ASSERT_M_FUNCTION_NAME,	\
+					(format), __VA_ARGS__													\
+				))
+
+#		define assert_check_mf(	condition, format, ...	)								\
+			((condition)																\
+			? 1																			\
+			: ( assert_fail_mf( __LINE__, #condition, __FILE__, ASSERT_M_FUNCTION_NAME,	\
+				(format), __VA_ARGS__													\
+			), 0 ) )
+
 #	endif /* __STDC_VERSION__ >= 199901L */
 
 #endif /* NDEBUG */
