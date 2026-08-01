@@ -24,8 +24,6 @@
 #include <stdio.h>	/* vsnprintf*/
 #include <stdlib.h>	/* malloc	*/
 
-#include <string.h>
-
 #define WOEM_STATIC_CAPACITY	8
 #define WOEM_BASE_ERRORS_AMOUNT	4
 
