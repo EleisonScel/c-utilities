@@ -18,11 +18,11 @@
 #include "dynamic_array.h"	/* da_dynamic_array_shrink	*/
 #include "assert_m.h"		/* assert_m					*/
 
+#include <stdio.h>	/* vsnprintf*/
 #include <stdarg.h>	/* va_list	*/
 #include <stddef.h>	/* size_t	*/
-#include <stdbool.h>/* bool		*/
-#include <stdio.h>	/* vsnprintf*/
 #include <stdlib.h>	/* malloc	*/
+#include <stdbool.h>/* bool		*/
 
 #define WOEM_STATIC_CAPACITY	8
 #define WOEM_BASE_ERRORS_AMOUNT	4
@@ -215,6 +215,7 @@ static bool woem_write_out_error_message(
 {
 	assert_m( out_error_message != NULL, "No error message handle found" );
 	char * buffer_pointer = NULL;
+	/* int required by vsnprintf */
 	int written = 0, chars_needed = 0;
 
 	if ( out_error_message == NULL ) goto cleanup;
@@ -228,7 +229,6 @@ static bool woem_write_out_error_message(
 
 	va_list arguments_temporary;
 	va_copy( arguments_temporary, arguments );
-	/* int required by vsnprintf */
 	chars_needed = vsnprintf( NULL, 0, format_pointer, arguments_temporary );
 	va_end( arguments_temporary );
 
@@ -237,13 +237,21 @@ static bool woem_write_out_error_message(
 		goto cleanup;
 	}
 
-	buffer_pointer = malloc( ((size_t)chars_needed + 1) * sizeof(*buffer_pointer) );
+#	if INT_MAX >= SIZE_MAX
+
+	if ( (unsigned int) chars_needed + 1 > (unsigned int) SIZE_MAX ) {
+		*out_error_message = woem_error_malloc_failed;
+		goto cleanup;
+	}
+
+#	endif /* INT_MAX >= SIZE_MAX */
+
+	buffer_pointer = malloc( (size_t) chars_needed + 1 );
 	if ( buffer_pointer == NULL ) {
 		*out_error_message = woem_error_malloc_failed;
 		goto cleanup;
 	}
 
-	/* int required by vsnprintf */
 	written = vsnprintf(
 		buffer_pointer, (size_t)chars_needed + 1, format_pointer, arguments
 	);
@@ -254,6 +262,7 @@ static bool woem_write_out_error_message(
 
 	*out_error_message = buffer_pointer;
 	return true;
+
 cleanup:
 	if ( buffer_pointer ) free( buffer_pointer );
 	return false;
