@@ -48,9 +48,7 @@ static inline bool sa_ovf_pow_uint8_t(
 		uint8_t base_value, size_t exponent, uint8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -60,7 +58,7 @@ static inline bool sa_ovf_pow_uint8_t(
 
 	uint8_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_uint8_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -81,9 +79,7 @@ static inline bool sa_ovf_pow_int8_t(
 		int8_t base_value, size_t exponent, int8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -93,7 +89,7 @@ static inline bool sa_ovf_pow_int8_t(
 
 	int8_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_int8_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -114,9 +110,7 @@ static inline bool sa_ovf_pow_uint16_t(
 		uint16_t base_value, size_t exponent, uint16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -126,7 +120,7 @@ static inline bool sa_ovf_pow_uint16_t(
 
 	uint16_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_uint16_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -147,9 +141,7 @@ static inline bool sa_ovf_pow_int16_t(
 		int16_t base_value, size_t exponent, int16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -159,7 +151,7 @@ static inline bool sa_ovf_pow_int16_t(
 
 	int16_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_int16_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -180,9 +172,7 @@ static inline bool sa_ovf_pow_uint32_t(
 		uint32_t base_value, size_t exponent, uint32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -192,7 +182,7 @@ static inline bool sa_ovf_pow_uint32_t(
 
 	uint32_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_uint32_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -213,9 +203,7 @@ static inline bool sa_ovf_pow_int32_t(
 		int32_t base_value, size_t exponent, int32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -225,7 +213,7 @@ static inline bool sa_ovf_pow_int32_t(
 
 	int32_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_int32_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -246,9 +234,7 @@ static inline bool sa_ovf_pow_uint64_t(
 		uint64_t base_value, size_t exponent, uint64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -258,7 +244,7 @@ static inline bool sa_ovf_pow_uint64_t(
 
 	uint64_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_uint64_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -279,9 +265,7 @@ static inline bool sa_ovf_pow_int64_t(
 		int64_t base_value, size_t exponent, int64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -291,7 +275,7 @@ static inline bool sa_ovf_pow_int64_t(
 
 	int64_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_int64_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -311,9 +295,7 @@ static inline bool sa_ovf_pow_size_t(
 		size_t base_value, size_t exponent, size_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -323,7 +305,7 @@ static inline bool sa_ovf_pow_size_t(
 
 	size_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_size_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -342,9 +324,7 @@ static inline bool sa_ovf_pow_ptrdiff_t(
 		ptrdiff_t base_value, size_t exponent, ptrdiff_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -354,7 +334,7 @@ static inline bool sa_ovf_pow_ptrdiff_t(
 
 	ptrdiff_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_ptrdiff_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -373,9 +353,7 @@ static inline bool sa_ovf_pow_uintmax_t(
 		uintmax_t base_value, size_t exponent, uintmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -385,7 +363,7 @@ static inline bool sa_ovf_pow_uintmax_t(
 
 	uintmax_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_uintmax_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -404,9 +382,7 @@ static inline bool sa_ovf_pow_intmax_t(
 		intmax_t base_value, size_t exponent, intmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -416,7 +392,7 @@ static inline bool sa_ovf_pow_intmax_t(
 
 	intmax_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_intmax_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -436,9 +412,7 @@ static inline bool sa_ovf_pow_uintptr_t(
 		uintptr_t base_value, size_t exponent, uintptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -448,7 +422,7 @@ static inline bool sa_ovf_pow_uintptr_t(
 
 	uintptr_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_uintptr_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
@@ -469,9 +443,7 @@ static inline bool sa_ovf_pow_intptr_t(
 		intptr_t base_value, size_t exponent, intptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( exponent == 0 ) {
@@ -481,7 +453,7 @@ static inline bool sa_ovf_pow_intptr_t(
 
 	intptr_t result_temporary = 1;
 	while ( exponent > 0 ) {
-		if ( (exponent & 1) == true ) {
+		if ( (exponent & 1) != 0 ) {
 			if ( sa_ovf_mul_intptr_t( result_temporary, base_value, &result_temporary) == true )
 				return true;
 		}
