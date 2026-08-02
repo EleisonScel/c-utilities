@@ -40,8 +40,7 @@ void cr_register_cleanup_wrapper(
 
 	if ( function_pointer != NULL && cr_current_handle.function_pointer == NULL ) {
 		int result = atexit( cr_cleanup_wrapper );
-		assert_m( result == 0, "Exit handler registration failed" );
-		if ( result == 0 ) {
+		if( assert_check_m( result == 0, "Exit handler registration failed" ) == true ) {
 			cr_current_handle.function_pointer = function_pointer;
 			cr_registered_atexit = true;
 		}
@@ -53,10 +52,11 @@ void cr_register_cleanup_wrapper(
  * internal callback that must call registered cleanup function
  */
 static void cr_cleanup_wrapper(void) {
-	assert_m(
-		cr_current_handle.function_pointer != NULL && cr_registered_atexit == true,
-		"Invalid exit callback state"
-	);
-	if ( cr_current_handle.function_pointer != NULL )
+	if( assert_check_m(
+			cr_current_handle.function_pointer != NULL && cr_registered_atexit == true,
+			"Invalid exit callback state"
+		) == true)
+	{
 		(*cr_current_handle.function_pointer)( cr_current_handle.argument_pointer );
+	}
 }
