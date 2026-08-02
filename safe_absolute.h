@@ -35,7 +35,7 @@
 #ifndef SAFE_ABSOLUTE_H
 #define SAFE_ABSOLUTE_H
 
-#	include "assert_m.h"	/* assert_m			*/
+#	include "assert_m.h"	/* assert_check_m	*/
 #	include "safe_negate.h"	/* sa_ovf_neg_int8_t*/
 
 #	include <stdint.h>		/* uint8_t			*/
