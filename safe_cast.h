@@ -36,7 +36,7 @@
 #ifndef SAFE_CAST_H
 #define SAFE_CAST_H
 
-#	include "assert_m.h"/* assert_m */
+#	include "assert_m.h"/* assert_check_m */
 
 #	include <stddef.h>	/* size_t	*/
 #	include <stdint.h>	/* int8_t	*/
