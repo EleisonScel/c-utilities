@@ -15,10 +15,13 @@ Supports Windows, POSIX, C11 and fallback using standard malloc.
 ### assert_m
 Flexible assert macros:
 - `assert_m(condition, message)` - assertion with a string message.  
-- `assert_mf(condition, format, ...)` - assertion with format (requires C99 or GCC/clang extensions).  
-- `static_assert_m(condition, message)` - compile-time checks (requires C11 with a string literal or C89 but text will not be accurate).  
-> `assert_m` and `assert_mf` are disabled when `NDEBUG` is defined.
-> `static_assert_m` is **not** affected by `NDEBUG`.
+- `assert_mf(condition, format, ...)` - assertion with format (requires C99 or GCC/clang extensions).
+- `assert_check_m(condition, message)` - evaluates `condition` like an if check; in debug builds fails on false with an assertion message.   
+- `assert_check_mf(condition, format, ...)` - same as `assert_check_m` with format (requires C99 or GCC/clang extensions).   
+- `static_assert_m(condition, message)` - compile-time checks (requires C11 with a string literal or C89 but text will not be accurate).   
+> `assert_m` and `assert_mf` are disabled when `NDEBUG` is defined.   
+> `assert_check_m` and `assert_check_mf` are **not disabled** by `NDEBUG`; they still return condition's truth.   
+> `static_assert_m` is **not** affected by `NDEBUG`.   
 
 ### clamp_values
 Inline clamping functions.  
