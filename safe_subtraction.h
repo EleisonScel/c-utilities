@@ -65,9 +65,7 @@ static inline bool sa_ovf_sub_uint8_t(
 		uint8_t minuend, uint8_t subtrahend, uint8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -95,9 +93,7 @@ static inline bool sa_ovf_sub_int8_t(
 		int8_t minuend, int8_t subtrahend, int8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -127,9 +123,7 @@ static inline bool sa_ovf_sub_uint16_t(
 		uint16_t minuend, uint16_t subtrahend, uint16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -157,9 +151,7 @@ static inline bool sa_ovf_sub_int16_t(
 		int16_t minuend, int16_t subtrahend, int16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -189,9 +181,7 @@ static inline bool sa_ovf_sub_uint32_t(
 		uint32_t minuend, uint32_t subtrahend, uint32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -219,9 +209,7 @@ static inline bool sa_ovf_sub_int32_t(
 		int32_t minuend, int32_t subtrahend, int32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -251,9 +239,7 @@ static inline bool sa_ovf_sub_uint64_t(
 		uint64_t minuend, uint64_t subtrahend, uint64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -281,9 +267,7 @@ static inline bool sa_ovf_sub_int64_t(
 		int64_t minuend, int64_t subtrahend, int64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -311,9 +295,7 @@ static inline bool sa_ovf_sub_size_t(
 		size_t minuend, size_t subtrahend, size_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #	if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -339,9 +321,7 @@ static inline bool sa_ovf_sub_ptrdiff_t(
 		ptrdiff_t minuend, ptrdiff_t subtrahend, ptrdiff_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #	if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -368,9 +348,7 @@ static inline bool sa_ovf_sub_uintmax_t(
 		uintmax_t minuend, uintmax_t subtrahend, uintmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #	if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -396,9 +374,7 @@ static inline bool sa_ovf_sub_intmax_t(
 		intmax_t minuend, intmax_t subtrahend, intmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #	if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -426,9 +402,7 @@ static inline bool sa_ovf_sub_uintptr_t(
 		uintptr_t minuend, uintptr_t subtrahend, uintptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
@@ -456,9 +430,7 @@ static inline bool sa_ovf_sub_intptr_t(
 		intptr_t minuend, intptr_t subtrahend, intptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if ( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 #		if SA_SAFE_HAS_OVERFLOW_SUBTRACTION_STANDARD == 1
