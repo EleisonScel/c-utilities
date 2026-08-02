@@ -47,9 +47,8 @@ static inline bool sa_ovf_div_uint8_t(
 		uint8_t dividend, uint8_t divisor, uint8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -62,9 +61,8 @@ static inline bool sa_ovf_div_int8_t(
 		int8_t dividend, int8_t divisor, int8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 || (divisor == -1 && dividend == INT8_MIN) )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 || (divisor == -1 && dividend == INT8_MIN) )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -78,9 +76,8 @@ static inline bool sa_ovf_div_uint16_t(
 		uint16_t dividend, uint16_t divisor, uint16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -93,9 +90,8 @@ static inline bool sa_ovf_div_int16_t(
 		int16_t dividend, int16_t divisor, int16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 || (divisor == -1 && dividend == INT16_MIN) )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 || (divisor == -1 && dividend == INT16_MIN) )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -109,9 +105,8 @@ static inline bool sa_ovf_div_uint32_t(
 		uint32_t dividend, uint32_t divisor, uint32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -124,9 +119,8 @@ static inline bool sa_ovf_div_int32_t(
 		int32_t dividend, int32_t divisor, int32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 || (divisor == -1 && dividend == INT32_MIN) )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 || (divisor == -1 && dividend == INT32_MIN) )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -140,9 +134,8 @@ static inline bool sa_ovf_div_uint64_t(
 		uint64_t dividend, uint64_t divisor, uint64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -155,9 +148,8 @@ static inline bool sa_ovf_div_int64_t(
 		int64_t dividend, int64_t divisor, int64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 || (divisor == -1 && dividend == INT64_MIN) )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 || (divisor == -1 && dividend == INT64_MIN) )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -170,9 +162,8 @@ static inline bool sa_ovf_div_size_t(
 		size_t dividend, size_t divisor, size_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -183,9 +174,8 @@ static inline bool sa_ovf_div_ptrdiff_t(
 		ptrdiff_t dividend, ptrdiff_t divisor, ptrdiff_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 || (divisor == -1 && dividend == PTRDIFF_MIN) )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 || (divisor == -1 && dividend == PTRDIFF_MIN) )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -197,9 +187,8 @@ static inline bool sa_ovf_div_uintmax_t(
 		uintmax_t dividend, uintmax_t divisor, uintmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -210,9 +199,8 @@ static inline bool sa_ovf_div_intmax_t(
 		intmax_t dividend, intmax_t divisor, intmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 || (divisor == -1 && dividend == INTMAX_MIN) )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 || (divisor == -1 && dividend == INTMAX_MIN) )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -225,9 +213,8 @@ static inline bool sa_ovf_div_uintptr_t(
 		uintptr_t dividend, uintptr_t divisor, uintptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 )
 		return true;
 
 	*result_pointer = dividend / divisor;
@@ -240,9 +227,8 @@ static inline bool sa_ovf_div_intptr_t(
 		intptr_t dividend, intptr_t divisor, intptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || divisor == 0 || (divisor == -1 && dividend == INTPTR_MIN) )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		divisor == 0 || (divisor == -1 && dividend == INTPTR_MIN) )
 		return true;
 
 	*result_pointer = dividend / divisor;
