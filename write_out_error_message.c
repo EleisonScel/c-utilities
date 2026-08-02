@@ -50,8 +50,8 @@ static bool woem_store_error_message( char * restrict error_message_pointer, boo
 static bool woem_ensure_capacity( void );
 
 bool woem_push( const char * restrict format_pointer, ... ) {
-	assert_m( format_pointer != NULL, "No error message found" );
-	if ( format_pointer == NULL ) return false;
+	if( assert_check_m( format_pointer != NULL, "No error message found" ) == false )
+		return false;
 
 	bool message_must_be_freed = false;
 	char * error_message_pointer = NULL;
@@ -67,8 +67,7 @@ bool woem_push( const char * restrict format_pointer, ... ) {
 }
 
 bool woem_push_raw( char * restrict error_message_pointer ) {
-	assert_m( error_message_pointer != NULL, "No error message found" );
-	if ( error_message_pointer == NULL )
+	if( assert_check_m( error_message_pointer != NULL, "No error message found" ) == false )
 		return false;
 
 	return woem_store_error_message( error_message_pointer, true );
@@ -132,8 +131,8 @@ void woem_shrink(void) {
 }
 
 char * woem_pop( bool * restrict out_must_be_freed_pointer ) {
-	assert_m( out_must_be_freed_pointer != NULL, "No free flag found" );
-	if ( out_must_be_freed_pointer == NULL ) return NULL;
+	if( assert_check_m( out_must_be_freed_pointer != NULL, "No free flag found" ) == false )
+		return NULL;
 	if ( current_error_handle.amount == 0 ) {
 		*out_must_be_freed_pointer = false;
 		return NULL;
@@ -213,16 +212,15 @@ static bool woem_write_out_error_message(
 		const char * restrict format_pointer, va_list arguments
 	)
 {
-	assert_m( out_error_message != NULL, "No error message handle found" );
 	char * buffer_pointer = NULL;
 	/* int required by vsnprintf */
 	int written = 0, chars_needed = 0;
 
-	if ( out_error_message == NULL ) goto cleanup;
+	if( assert_check_m( out_error_message != NULL, "No error message handle found" ) == false )
+		goto cleanup;
 	*out_error_message = NULL;
 
-	assert_m( format_pointer != NULL, "No error message specified" );
-	if ( format_pointer == NULL ) {
+	if ( assert_check_m( format_pointer != NULL, "No error message specified" ) == false ) {
 		*out_error_message = woem_error_no_message;
 		goto cleanup;
 	}
