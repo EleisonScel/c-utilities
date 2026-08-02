@@ -44,9 +44,7 @@
 
 #	if defined(INT8_MIN)
 static inline bool sa_ovf_abs_int8_t( int8_t original_value, int8_t * result_pointer ) {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if (assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( original_value >= 0 ) {
@@ -59,9 +57,7 @@ static inline bool sa_ovf_abs_int8_t( int8_t original_value, int8_t * result_poi
 
 #	if defined(INT16_MIN)
 static inline bool sa_ovf_abs_int16_t( int16_t original_value, int16_t * result_pointer ) {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if (assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( original_value >= 0 ) {
@@ -74,9 +70,7 @@ static inline bool sa_ovf_abs_int16_t( int16_t original_value, int16_t * result_
 
 #	if defined(INT32_MIN)
 static inline bool sa_ovf_abs_int32_t( int32_t original_value, int32_t * result_pointer ) {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if (assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( original_value >= 0 ) {
@@ -89,9 +83,7 @@ static inline bool sa_ovf_abs_int32_t( int32_t original_value, int32_t * result_
 
 #	if defined(INT64_MIN)
 static inline bool sa_ovf_abs_int64_t( int64_t original_value, int64_t * result_pointer ) {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if (assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( original_value >= 0 ) {
@@ -103,9 +95,7 @@ static inline bool sa_ovf_abs_int64_t( int64_t original_value, int64_t * result_
 #	endif /* INT64_MIN */
 
 static inline bool sa_ovf_abs_ptrdiff_t( ptrdiff_t original_value, ptrdiff_t * result_pointer ) {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if (assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( original_value >= 0 ) {
@@ -116,9 +106,7 @@ static inline bool sa_ovf_abs_ptrdiff_t( ptrdiff_t original_value, ptrdiff_t * r
 }
 
 static inline bool sa_ovf_abs_intmax_t( intmax_t original_value, intmax_t * result_pointer ) {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if (assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( original_value >= 0 ) {
@@ -130,9 +118,7 @@ static inline bool sa_ovf_abs_intmax_t( intmax_t original_value, intmax_t * resu
 
 #	ifdef INTPTR_MIN
 static inline bool sa_ovf_abs_intptr_t( intptr_t original_value, intptr_t * result_pointer ) {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL )
+	if (assert_check_m( result_pointer != NULL, "No place to store result found" ) == false )
 		return true;
 
 	if ( original_value >= 0 ) {
