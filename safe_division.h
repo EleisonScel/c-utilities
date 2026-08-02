@@ -36,7 +36,7 @@
 #ifndef SAFE_DIVISION_H
 #define SAFE_DIVISION_H
 
-#	include "assert_m.h"/* assert_m */
+#	include "assert_m.h"/* assert_check_m */
 
 #	include <stdint.h>	/* uint8_t	*/
 #	include <stddef.h>	/* size_t	*/
