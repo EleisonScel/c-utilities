@@ -18,12 +18,19 @@
 #include	"assert_m.h"
 
 #include	<stdint.h>	/* uint64_t */
+
 #ifndef NDEBUG
 #	include	<inttypes.h>/* PRIu32 */
 #endif
 
-static uint64_t	lcg_get_bits_64	( int		bits	);
-static int8_t	lcg_bit_position( uint32_t	value	);
+#if defined(_MSC_VER)
+#	include <intrin.h>
+#elif !defined(__has_builtin)
+#	define __has_builtin(x) 0
+#endif /* _MSC_VER */
+
+static inline int8_t lcg_bit_position( uint32_t value );
+static uint64_t	lcg_get_bits_64( int bits );
 
 static uint64_t seed64 = 1;
 static uint32_t seed32 = 1;
@@ -128,12 +135,24 @@ static uint64_t lcg_get_bits_64( int bits ) {
  * Returns:
  * int8_t	- bit index
  */
-static int8_t lcg_bit_position( uint32_t value ) {
+static inline int8_t lcg_bit_position( uint32_t value ) {
 	assert_mf(
 		(value & (value - 1)) == 0,
 		"Value must be a power-of-two to find a bit (value: %" PRIu32 ")", value
 	);
 	assert_m( value != 0, "Value shouldn't be zero" );
+
+#if defined(_MSC_VER)
+
+	unsigned long index;
+	_BitScanForward( &index, value );
+	return (int8_t) index;
+
+#elif __has_builtin(__builtin_ctz)
+
+	return (int8_t) __builtin_ctz(value);
+
+#else
 
 	uint32_t magic = 0x077CB531U;
 	static const char bits_table[32] = {
@@ -144,4 +163,6 @@ static int8_t lcg_bit_position( uint32_t value ) {
 	};
 
 	return bits_table[(value * magic) >> 27];
+
+#endif /* _MSC_VER */
 }
