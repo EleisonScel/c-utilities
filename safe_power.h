@@ -36,7 +36,7 @@
 #ifndef SAFE_POWER_H
 #define SAFE_POWER_H
 
-#	include "assert_m.h"			/* assert_m			*/
+#	include "assert_m.h"			/* assert_check_m	*/
 #	include "safe_multiplication.h"	/* sa_ovf_mul_int8_t*/
 
 #	include <stdint.h>	/* uint8_t	*/
