@@ -39,11 +39,11 @@ GLuint csp_create_shader_program (
 {
 	GLuint vertex_shader = 0, fragment_shader = 0;
 
-	assert_m(
-		vertex_shader_source_pointer != NULL && fragment_shader_source_pointer != NULL,
-		"No shader sources found"
-	);
-	if ( vertex_shader_source_pointer == NULL || fragment_shader_source_pointer == NULL ) {
+	if( assert_check_m(
+			vertex_shader_source_pointer != NULL && fragment_shader_source_pointer != NULL,
+			"No shader sources found"
+		) == false )
+	{
 		woem_push( "(csp_create_shader_program) invalid arguments" );
 		return 0;
 	}
@@ -73,21 +73,19 @@ GLuint csp_create_shader_program_many_sources (
 {
 	GLuint vertex_shader = 0, fragment_shader = 0;
 
-	assert_m(
-		vertex_shader_source_amount > 0 && fragment_shader_source_amount > 0,
-		"Wrong shaders amount"
-	);
-	assert_m(
-		vertex_shader_sources_pointers != NULL && fragment_shader_sources_pointers != NULL,
-		"No shader sources found"
-	);
-
-	if (vertex_shader_sources_pointers	== NULL	|| vertex_shader_source_amount		== 0 ||
-		fragment_shader_sources_pointers== NULL	|| fragment_shader_source_amount	== 0 )
+	if( assert_check_m(
+			vertex_shader_source_amount > 0 && fragment_shader_source_amount > 0,
+			"Wrong shaders amount"
+		) == false ||
+		assert_check_m(
+			vertex_shader_sources_pointers != NULL && fragment_shader_sources_pointers != NULL,
+			"No shader sources found"
+		) == false)
 	{
 		woem_push( "(csp_create_shader_program_many_sources) invalid arguments" );
 		return 0;
 	}
+
 	vertex_shader = csp_compile_shaders(
 		GL_VERTEX_SHADER, vertex_shader_sources_pointers, vertex_shader_source_amount
 	);
@@ -159,6 +157,7 @@ static GLuint csp_link_shader_program(
 		goto cleanup;
 	}
 	return shader_program;
+
 cleanup:
 	if ( fragment_shader!= 0 ) (void) glDeleteShader_wrapped(	fragment_shader	);
 	if ( vertex_shader	!= 0 ) (void) glDeleteShader_wrapped(	vertex_shader	);
@@ -189,9 +188,9 @@ static GLuint csp_compile_shaders(
 	GLint success = 0;
 	GLuint shader = 0;
 
-	assert_m( shader_sources_pointers	!= NULL,	"No shader sources found" );
-	assert_m( sources_amount			> 0,		"Wrong sources amount" );
-	if ( shader_sources_pointers == NULL || sources_amount <= 0 ) {
+	if( assert_check_m( shader_sources_pointers	!= NULL,"No shader sources found")	== false ||
+		assert_check_m( sources_amount			> 0,	"Wrong sources amount"	)	== false )
+	{
 		woem_push( "(csp_compile_shaders) invalid arguments" );
 		goto cleanup;
 	}
@@ -219,6 +218,7 @@ static GLuint csp_compile_shaders(
 	}
 
 	return shader;
+
 cleanup:
 	if ( shader != 0 ) (void) glDeleteShader_wrapped( shader );
 	return 0;
