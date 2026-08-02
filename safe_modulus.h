@@ -49,9 +49,8 @@ static inline bool sa_math_mod_uint8_t(
 		uint8_t dividend, uint8_t modulus, uint8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	*result_pointer = dividend % modulus;
@@ -64,9 +63,8 @@ static inline bool sa_math_mod_int8_t(
 		int8_t dividend, int8_t modulus, int8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0  )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	if ( modulus == -1 ) {
@@ -90,9 +88,8 @@ static inline bool sa_math_mod_uint16_t(
 		uint16_t dividend, uint16_t modulus, uint16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	*result_pointer = dividend % modulus;
@@ -105,9 +102,8 @@ static inline bool sa_math_mod_int16_t(
 		int16_t dividend, int16_t modulus, int16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0  )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	if ( modulus == -1 ) {
@@ -131,9 +127,8 @@ static inline bool sa_math_mod_uint32_t(
 		uint32_t dividend, uint32_t modulus, uint32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	*result_pointer = dividend % modulus;
@@ -146,9 +141,8 @@ static inline bool sa_math_mod_int32_t(
 		int32_t dividend, int32_t modulus, int32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0  )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	if ( modulus == -1 ) {
@@ -172,9 +166,8 @@ static inline bool sa_math_mod_uint64_t(
 		uint64_t dividend, uint64_t modulus, uint64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	*result_pointer = dividend % modulus;
@@ -187,9 +180,8 @@ static inline bool sa_math_mod_int64_t(
 		int64_t dividend, int64_t modulus, int64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0  )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	if ( modulus == -1 ) {
@@ -212,9 +204,8 @@ static inline bool sa_math_mod_size_t(
 		size_t dividend, size_t modulus, size_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	*result_pointer = dividend % modulus;
@@ -225,9 +216,8 @@ static inline bool sa_math_mod_ptrdiff_t(
 		ptrdiff_t dividend, ptrdiff_t modulus, ptrdiff_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0  )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	if ( modulus == -1 ) {
@@ -249,9 +239,8 @@ static inline bool sa_math_mod_uintmax_t(
 		uintmax_t dividend, uintmax_t modulus, uintmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	*result_pointer = dividend % modulus;
@@ -262,9 +251,8 @@ static inline bool sa_math_mod_intmax_t(
 		intmax_t dividend, intmax_t modulus, intmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0  )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	if ( modulus == -1 ) {
@@ -287,9 +275,8 @@ static inline bool sa_math_mod_uintptr_t(
 		uintptr_t dividend, uintptr_t modulus, uintptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	*result_pointer = dividend % modulus;
@@ -302,9 +289,8 @@ static inline bool sa_math_mod_intptr_t(
 		intptr_t dividend, intptr_t modulus, intptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || modulus == 0  )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		modulus == 0 )
 		return true;
 
 	if ( modulus == -1 ) {
