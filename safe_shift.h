@@ -41,7 +41,7 @@
 #ifndef SAFE_SHIFT_H
 #define SAFE_SHIFT_H
 
-#	include "assert_m.h"	/* assert_m			*/
+#	include "assert_m.h"	/* assert_check_m	*/
 
 #	include <stdint.h>		/* uint8_t			*/
 #	include <stddef.h>		/* size_t			*/
@@ -188,9 +188,8 @@ static inline bool sa_safe_shl_int8_t(
 		int8_t value_original, size_t bits_shift_amount, int8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 8 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 8 )
 		return true;
 
 	uint8_t value_unsigned = (uint8_t)((uint8_t) value_original << bits_shift_amount);
@@ -225,9 +224,8 @@ static inline bool sa_safe_shl_uint8_t(
 		uint8_t value_original, size_t bits_shift_amount, uint8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 8 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 8 )
 		return true;
 
 	*result_pointer = value_original << bits_shift_amount;
@@ -240,9 +238,8 @@ static inline bool sa_safe_shl_int16_t(
 		int16_t value_original, size_t bits_shift_amount, int16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 16 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 16 )
 		return true;
 
 	uint16_t value_unsigned = (uint16_t)((uint16_t) value_original << bits_shift_amount);
@@ -277,9 +274,8 @@ static inline bool sa_safe_shl_uint16_t(
 		uint16_t value_original, size_t bits_shift_amount, uint16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 16 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 16 )
 		return true;
 
 	*result_pointer = value_original << bits_shift_amount;
@@ -292,9 +288,8 @@ static inline bool sa_safe_shl_int32_t(
 		int32_t value_original, size_t bits_shift_amount, int32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 32 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 32 )
 		return true;
 
 	uint32_t value_unsigned = (uint32_t)((uint32_t) value_original << bits_shift_amount);
@@ -329,9 +324,8 @@ static inline bool sa_safe_shl_uint32_t(
 		uint32_t value_original, size_t bits_shift_amount, uint32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 32 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 32 )
 		return true;
 
 	*result_pointer = value_original << bits_shift_amount;
@@ -344,9 +338,8 @@ static inline bool sa_safe_shl_int64_t(
 		int64_t value_original, size_t bits_shift_amount, int64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 64 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 64 )
 		return true;
 
 	uint64_t value_unsigned = (uint64_t)((uint64_t) value_original << bits_shift_amount);
@@ -381,9 +374,8 @@ static inline bool sa_safe_shl_uint64_t(
 		uint64_t value_original, size_t bits_shift_amount, uint64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 64 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 64 )
 		return true;
 
 	*result_pointer = value_original << bits_shift_amount;
@@ -395,9 +387,8 @@ static inline bool sa_safe_shl_size_t(
 		size_t value_original, size_t bits_shift_amount, size_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(size_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(size_t) * CHAR_BIT )
 		return true;
 
 	*result_pointer = value_original << bits_shift_amount;
@@ -408,9 +399,8 @@ static inline bool sa_safe_shl_ptrdiff_t(
 		ptrdiff_t value_original, size_t bits_shift_amount, ptrdiff_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(ptrdiff_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(ptrdiff_t) * CHAR_BIT )
 		return true;
 
 	SA_SAFE_PTRDIFF_UNSIGNED value_shift_result = (SA_SAFE_PTRDIFF_UNSIGNED)
@@ -458,9 +448,8 @@ static inline bool sa_safe_shl_intmax_t(
 		intmax_t value_original, size_t bits_shift_amount, intmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(intmax_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(intmax_t) * CHAR_BIT )
 		return true;
 
 	uintmax_t value_unsigned = (uintmax_t)((uintmax_t) value_original << bits_shift_amount);
@@ -493,9 +482,8 @@ static inline bool sa_safe_shl_uintmax_t(
 		uintmax_t value_original, size_t bits_shift_amount, uintmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(uintmax_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(uintmax_t) * CHAR_BIT )
 		return true;
 
 	*result_pointer = value_original << bits_shift_amount;
@@ -507,9 +495,8 @@ static inline bool sa_safe_shl_intptr_t(
 		intptr_t value_original, size_t bits_shift_amount, intptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(intptr_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(intptr_t) * CHAR_BIT )
 		return true;
 
 	uintptr_t value_unsigned = (uintptr_t)((uintptr_t) value_original << bits_shift_amount);
@@ -544,9 +531,8 @@ static inline bool sa_safe_shl_uintptr_t(
 		uintptr_t value_original, size_t bits_shift_amount, uintptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(uintptr_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(uintptr_t) * CHAR_BIT )
 		return true;
 
 	*result_pointer = value_original << bits_shift_amount;
@@ -559,9 +545,8 @@ static inline bool sa_safe_shr_int8_t(
 		int8_t value_original, size_t bits_shift_amount, int8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 8 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 8 )
 		return true;
 
 #		if defined(__STDC_VERSION__) && (__STDC_VERSION__ + 0L) == 202311L
@@ -595,9 +580,8 @@ static inline bool sa_safe_shr_uint8_t(
 		uint8_t value_original, size_t bits_shift_amount, uint8_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 8 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 8 )
 		return true;
 
 	*result_pointer = (uint8_t)(value_original >> bits_shift_amount);
@@ -610,9 +594,8 @@ static inline bool sa_safe_shr_int16_t(
 		int16_t value_original, size_t bits_shift_amount, int16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 16 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 16 )
 		return true;
 
 #		if defined(__STDC_VERSION__) && (__STDC_VERSION__ + 0L) == 202311L
@@ -646,9 +629,8 @@ static inline bool sa_safe_shr_uint16_t(
 		uint16_t value_original, size_t bits_shift_amount, uint16_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 16 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 16 )
 		return true;
 
 	*result_pointer = (uint16_t)(value_original >> bits_shift_amount);
@@ -661,9 +643,8 @@ static inline bool sa_safe_shr_int32_t(
 		int32_t value_original, size_t bits_shift_amount, int32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 32 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 32 )
 		return true;
 
 #		if defined(__STDC_VERSION__) && (__STDC_VERSION__ + 0L) == 202311L
@@ -697,9 +678,8 @@ static inline bool sa_safe_shr_uint32_t(
 		uint32_t value_original, size_t bits_shift_amount, uint32_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 32 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 32 )
 		return true;
 
 	*result_pointer = (uint32_t)(value_original >> bits_shift_amount);
@@ -712,9 +692,8 @@ static inline bool sa_safe_shr_int64_t(
 		int64_t value_original, size_t bits_shift_amount, int64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 64 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 64 )
 		return true;
 
 #		if defined(__STDC_VERSION__) && (__STDC_VERSION__ + 0L) == 202311L
@@ -748,9 +727,8 @@ static inline bool sa_safe_shr_uint64_t(
 		uint64_t value_original, size_t bits_shift_amount, uint64_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= 64 )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= 64 )
 		return true;
 
 	*result_pointer = (uint64_t)(value_original >> bits_shift_amount);
@@ -762,9 +740,8 @@ static inline bool sa_safe_shr_ptrdiff_t(
 		ptrdiff_t value_original, size_t bits_shift_amount, ptrdiff_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(ptrdiff_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(ptrdiff_t) * CHAR_BIT )
 		return true;
 
 #	if defined(__STDC_VERSION__) && (__STDC_VERSION__ + 0L) == 202311L
@@ -805,9 +782,8 @@ static inline bool sa_safe_shr_intmax_t(
 		intmax_t value_original, size_t bits_shift_amount, intmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(intmax_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(intmax_t) * CHAR_BIT )
 		return true;
 
 #	if defined(__STDC_VERSION__) && (__STDC_VERSION__ + 0L) == 202311L
@@ -839,9 +815,8 @@ static inline bool sa_safe_shr_uintmax_t(
 		uintmax_t value_original, size_t bits_shift_amount, uintmax_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(uintmax_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(uintmax_t) * CHAR_BIT )
 		return true;
 
 	*result_pointer = (uintmax_t)(value_original >> bits_shift_amount);
@@ -854,9 +829,8 @@ static inline bool sa_safe_shr_intptr_t(
 		intptr_t value_original, size_t bits_shift_amount, intptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(intptr_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(intptr_t) * CHAR_BIT )
 		return true;
 
 #		if defined(__STDC_VERSION__) && (__STDC_VERSION__ + 0L) == 202311L
@@ -890,9 +864,8 @@ static inline bool sa_safe_shr_uintptr_t(
 		uintptr_t value_original, size_t bits_shift_amount, uintptr_t * result_pointer
 	)
 {
-	assert_m( result_pointer != NULL, "No place to store result found" );
-
-	if ( result_pointer == NULL || bits_shift_amount >= sizeof(uintptr_t) * CHAR_BIT )
+	if( assert_check_m( result_pointer != NULL, "No place to store result found" ) == false ||
+		bits_shift_amount >= sizeof(uintptr_t) * CHAR_BIT )
 		return true;
 
 	*result_pointer = (uintptr_t)(value_original >> bits_shift_amount);
