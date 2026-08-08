@@ -438,6 +438,7 @@ int hf_file_chunk_read(
 		*out_read_amount_pointer = 0;
 
 	FILE * file_pointer = NULL;
+	size_t bytes_read = 0;
 
 	int error_code = hf_file_open( path_pointer, "rb", &file_pointer );
 	if( error_code != RF_SUCCESS )
@@ -452,7 +453,7 @@ int hf_file_chunk_read(
 	if ( error_code != RF_SUCCESS )
 		goto cleanup;
 
-	size_t bytes_read = fread( data_pointer, 1, to_read_amount, file_pointer );
+	bytes_read = fread( data_pointer, 1, to_read_amount, file_pointer );
 	if ( ferror( file_pointer ) != 0 ) {
 		woem_push(
 			"(hf_file_chunk_read) I/O error while reading (%s) file (%s)",
@@ -485,6 +486,7 @@ int hf_file_chunk_write(
 		*out_written_amount_pointer = 0;
 
 	FILE * file_pointer = NULL;
+	size_t bytes_written = 0;
 
 	int error_code = hf_file_open( path_pointer, "r+b", &file_pointer );
 	if( error_code != RF_SUCCESS )
@@ -499,7 +501,7 @@ int hf_file_chunk_write(
 	if ( error_code != RF_SUCCESS )
 		goto cleanup;
 
-	size_t bytes_written = fwrite( data_pointer, 1, to_write_amount, file_pointer );
+	bytes_written = fwrite( data_pointer, 1, to_write_amount, file_pointer );
 	if ( bytes_written != to_write_amount ) {
 		woem_push(
 			"(hf_file_chunk_write) I/O error while writing (%s) file (%s)",
@@ -1141,7 +1143,6 @@ static bool hf_path_has_universal_naming_convention_prefix(const wchar_t path_ar
  * false		- failed to find
  */
 static bool hf_path_has_wide_prefix( const wchar_t path_array[static 4] ) {
-	assert_m( path_array != NULL, "No path found" );
 	return (path_array[0] == L'\\' && path_array[1] == L'\\' && path_array[3] == L'\\' &&
 			(path_array[2] == L'?' || path_array[2] == L'.')
 	);
