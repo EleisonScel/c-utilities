@@ -104,6 +104,40 @@ Overflow-checked integer conversion between all standard integer types.
 > `type_to_pointer` - must be not `NULL` (in debug builds)   
 > Requires C99   
 
+### safe_shift
+Portable checked bitwise shifts with well-defined wrapping   
+- `sa_safe_shl_<type>` - signed left shifts do a bitwise truncation.   
+- `sa_safe_shr_<type>` - signed right shifts are sign-extending.   
+> Return `true` if shift may not be safely performed (or if pointer is `NULL`), `false` on success.   
+> Unsigned shifts are zero-fill. No undefined and implementation-defined behavior for signed types.   
+
+### safe_\<operation>
+Portable overflow-checked integer arithmetic operations without undefined or implementation-defined behavior. Includes addition, subtraction, multiplication, division, mathematical modulus, negation, absolute value, exponentiation.
+- `sa_ovf_add_<type>`, `sa_ovf_sub_<type>`, `sa_ovf_mul_<type>` - compute on no overflow.   
+- `sa_ovf_div_<type>` - checks for division by zero and potentional overflow.   
+- `sa_math_mod_<type>` - compute mathematical module (negative result is impossible unlike built-in `%` operator).   
+- `sa_ovf_neg_<type>` - negate a number.   
+- `sa_ovf_abs_<type>` - take absolute value out.   
+- `sa_ovf_pow_<type>` - fast exponentiation by squaring.   
+> Return `true` if overflow occurred, `false` on success.   
+> Use __builtin_<operation>_overflow or <stdckdint.h> if available otherwise portable manual check.   
+
+### handle file
+Portable safe file handling operations.   
+- `hf_file_read` - reads a file into a heap-allocated buffer.   
+- `hf_file_write` - writes data to a file replacing original.   
+- `hf_file_append` - append data to the end of a file.   
+- `hf_file_copy` - copies a file from source to destination.   
+- `hf_file_rename_move` - renames or moves a file (with an additional cross-device copy fallback on POSIX).   
+- `hf_file_delete` - deletes a file.   
+- `hf_file_size_get` - retrieves the size of a file.   
+- `hf_file_chunk_read` - read a chunk of data from a specific position.   
+- `hf_file_chunk_write` - writes a chunk of data at a specific position.   
+- `hf_file_is_exists` - check if a file exists.   
+> Returns `0` on success, `-1` if file closure failed and `>0` for other errors.   
+> Support Windows, POSIX and standard backends. On windows safely handles UTF-8 paths, absolute path resulotion, UNC paths and long paths exceeding the standard (`MAX_PATH`) maximal length.    
+> Requires C99   
+
 ---
 
 **License**: Apache 2.0
