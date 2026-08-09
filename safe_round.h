@@ -90,7 +90,8 @@ static inline bool sa_round_up_int64_t(
 	int64_t remainder = 0;
 	bool impossible_result = sa_math_mod_int64_t( value_to_round, modulus, &remainder );
 	assert_m( impossible_result == false, "Impossible modulus overflow happened" );
-	if ( remainder == 0 ) {
+    (void) impossible_result;
+    if ( remainder == 0 ) {
 		*result_pointer = value_to_round;
 		return false;
 	}
@@ -108,6 +109,7 @@ static inline bool sa_round_down_int64_t(
 	int64_t remainder = 0;
 	bool impossible_result = sa_math_mod_int64_t( value_to_round, modulus, &remainder );
 	assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
 
 	return sa_ovf_sub_int64_t( value_to_round, remainder, result_pointer );
 }
@@ -156,6 +158,7 @@ static inline bool sa_round_up_int32_t(
     int32_t remainder = 0;
     bool impossible_result = sa_math_mod_int32_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
     if ( remainder == 0 ) {
         *result_pointer = value_to_round;
         return false;
@@ -174,6 +177,7 @@ static inline bool sa_round_down_int32_t(
     int32_t remainder = 0;
     bool impossible_result = sa_math_mod_int32_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
 
     return sa_ovf_sub_int32_t( value_to_round, remainder, result_pointer );
 }
@@ -222,6 +226,7 @@ static inline bool sa_round_up_int16_t(
     int16_t remainder = 0;
     bool impossible_result = sa_math_mod_int16_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
     if ( remainder == 0 ) {
         *result_pointer = value_to_round;
         return false;
@@ -240,6 +245,7 @@ static inline bool sa_round_down_int16_t(
     int16_t remainder = 0;
     bool impossible_result = sa_math_mod_int16_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
 
     return sa_ovf_sub_int16_t( value_to_round, remainder, result_pointer );
 }
@@ -288,6 +294,7 @@ static inline bool sa_round_up_int8_t(
     int8_t remainder = 0;
     bool impossible_result = sa_math_mod_int8_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
     if ( remainder == 0 ) {
         *result_pointer = value_to_round;
         return false;
@@ -306,6 +313,7 @@ static inline bool sa_round_down_int8_t(
     int8_t remainder = 0;
     bool impossible_result = sa_math_mod_int8_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
 
     return sa_ovf_sub_int8_t( value_to_round, remainder, result_pointer );
 }
@@ -351,6 +359,7 @@ static inline bool sa_round_up_intmax_t(
     intmax_t remainder = 0;
     bool impossible_result = sa_math_mod_intmax_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
     if ( remainder == 0 ) {
         *result_pointer = value_to_round;
         return false;
@@ -369,6 +378,7 @@ static inline bool sa_round_down_intmax_t(
     intmax_t remainder = 0;
     bool impossible_result = sa_math_mod_intmax_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
 
     return sa_ovf_sub_intmax_t( value_to_round, remainder, result_pointer );
 }
@@ -416,6 +426,7 @@ static inline bool sa_round_up_intptr_t(
     intptr_t remainder = 0;
     bool impossible_result = sa_math_mod_intptr_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
     if ( remainder == 0 ) {
         *result_pointer = value_to_round;
         return false;
@@ -434,6 +445,7 @@ static inline bool sa_round_down_intptr_t(
     intptr_t remainder = 0;
     bool impossible_result = sa_math_mod_intptr_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
 
     return sa_ovf_sub_intptr_t( value_to_round, remainder, result_pointer );
 }
@@ -479,6 +491,7 @@ static inline bool sa_round_up_ptrdiff_t(
     ptrdiff_t remainder = 0;
     bool impossible_result = sa_math_mod_ptrdiff_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
     if ( remainder == 0 ) {
         *result_pointer = value_to_round;
         return false;
@@ -497,6 +510,7 @@ static inline bool sa_round_down_ptrdiff_t(
     ptrdiff_t remainder = 0;
     bool impossible_result = sa_math_mod_ptrdiff_t( value_to_round, modulus, &remainder );
     assert_m( impossible_result == false, "Impossible modulus overflow happened" );
+    (void) impossible_result;
 
     return sa_ovf_sub_ptrdiff_t( value_to_round, remainder, result_pointer );
 }
