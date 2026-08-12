@@ -41,7 +41,7 @@ static inline size_t sa_check_array_bounds( size_t elements_amount, size_t eleme
  * false				- invalid arguments, overflow
  */
 static inline bool sa_malloc_array(
-		void * out_buffer_pointer, size_t elements_amount, size_t element_size
+		void * restrict out_buffer_pointer, size_t elements_amount, size_t element_size
 	)
 {
 	size_t total_bytes = sa_check_array_bounds( elements_amount, element_size );
@@ -70,7 +70,7 @@ static inline bool sa_malloc_array(
  * false				- invalid arguments, overflow
  */
 static inline bool sa_calloc_array(
-		void * out_buffer_pointer, size_t elements_amount, size_t element_size
+		void * restrict out_buffer_pointer, size_t elements_amount, size_t element_size
 	)
 {
 	if ( sa_check_array_bounds( elements_amount, element_size ) == 0 ) {
