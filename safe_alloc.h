@@ -18,6 +18,12 @@
 #ifndef SAFE_ALLOC_H
 #define SAFE_ALLOC_H
 
+enum sa_allocation_status {
+	SA_ALLOC_OVERFLOW	= -1,
+	SA_ALLOC_FAILURE	= 1,
+	SA_ALLOC_SUCCESS	= 0
+};
+
 #	include "assert_m.h"			/* assert_check_m	*/
 #	include "safe_multiplication.h"	/* sa_ovf_mul_size_t*/
 
@@ -94,26 +100,26 @@ static inline bool sa_calloc_array(
  * element_size			- size of each element
  *
  * Returns:
- * true					- math is safe, memory allocation attempted
- * false				- invalid arguments, overflow
+ * -1					- invalid arguments, overflow
+ * 0					- memory reallocated successfully
+ * 1					- out of memory
  */
-static inline bool sa_realloc_array(
+static inline enum sa_allocation_status sa_realloc_array(
 		void * out_buffer_pointer, void * pointer_original, size_t elements_amount,
 		size_t element_size
 	)
 {
 	size_t total_bytes = sa_check_array_bounds( elements_amount, element_size );
 
-	if (total_bytes == 0) {
-		void * null_pointer = NULL;
-		memcpy( out_buffer_pointer, &null_pointer, sizeof(void*) );
-		return false;
-	}
+	if (total_bytes == 0)
+		return SA_ALLOC_OVERFLOW;
 
 	void * pointer_new = realloc( pointer_original, total_bytes );
+	if ( pointer_new == NULL )
+		return SA_ALLOC_FAILURE;
 	memcpy( out_buffer_pointer, &pointer_new, sizeof(void*) );
 
-	return true;
+	return SA_ALLOC_SUCCESS;
 }
 
 /* Function:
@@ -126,26 +132,27 @@ static inline bool sa_realloc_array(
  * element_size			- size of each element
  *
  * Returns:
- * true					- math is safe, memory allocation attempted
- * false				- invalid arguments, overflow
+ * -1					- invalid arguments, overflow
+ * 0					- memory reallocated successfully
+ * 1					- out of memory
  */
-static inline bool sa_recalloc_array(
+static inline enum sa_allocation_status sa_recalloc_array(
 		void * out_buffer_pointer, void * pointer_original, size_t elements_amount_old,
 		size_t elements_amount_new, size_t element_size
 	)
 {
 	size_t total_bytes = sa_check_array_bounds( elements_amount_new, element_size );
 
-	if (total_bytes == 0) {
-		void * null_pointer = NULL;
-		memcpy( out_buffer_pointer, &null_pointer, sizeof(void*) );
-		return false;
-	}
+	if (total_bytes == 0)
+		return SA_ALLOC_OVERFLOW;
 
 	void * pointer_new = realloc( pointer_original, total_bytes );
+	if ( pointer_new == NULL )
+		return SA_ALLOC_FAILURE;
+
 	memcpy( out_buffer_pointer, &pointer_new, sizeof(void*) );
 
-	if ( pointer_new != NULL && elements_amount_new > elements_amount_old ) {
+	if ( elements_amount_new > elements_amount_old ) {
 		char * pointer_to_clean_from = (char *) pointer_new + (elements_amount_old * element_size);
 		memset(
 			pointer_to_clean_from,
@@ -154,7 +161,7 @@ static inline bool sa_recalloc_array(
 		);
 	}
 
-	return true;
+	return SA_ALLOC_SUCCESS;
 }
 
 /* Function:
