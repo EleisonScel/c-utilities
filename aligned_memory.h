@@ -65,7 +65,7 @@
  * release a raw memory block allocated with an am_aligned_malloc
  *
  * Parameters:
- * pointer - pointer to memory block previously allocated with an am_aligned_malloc
+ * buffer_pointer - pointer to memory block previously allocated with an am_aligned_malloc
  */
 void am_aligned_free( void * restrict buffer_pointer );
 
@@ -73,25 +73,29 @@ void am_aligned_free( void * restrict buffer_pointer );
  * allocate aligned memory block
  *
  * Parameters:
- * alignment	- desired address alignment
- * size			- size of memory block to allocate in bytes
+ * out_buffer_pointer	- holder to allocated memory
+ * alignment			- desired address alignment
+ * size					- size of memory block to allocate in bytes
  *
  * Returns:
- * pointer		- block was allocated (must be released with am_aligned_free)
- * NULL			- invalid arguments or allocation failure
+ * true					- math is safe, aligned memory allocation attempted
+ *							(must be released with am_aligned_free)
+ * false				- invalid arguments, overflow
  */
 bool am_aligned_malloc( void * restrict out_buffer_pointer, size_t alignment, size_t size );
 /* Function:
- * safe version of am_aligned_malloc
+ * safe version of am_aligned_malloc with array bounds checking
  *
  * Parameters:
- * alignment		- desired address alignment
- * elements_amount	- new amount of elements
- * element_size		- size of each element
+ * out_buffer_pointer	- holder to allocated memory
+ * alignment			- desired address alignment
+ * elements_amount		- new amount of elements
+ * element_size			- size of each element
  *
  * Returns:
- * pointer			- block was allocated (must be released with am_aligned_free)
- * NULL				- potential overflow, invalid arguments or allocation failure
+ * true					- math is safe, aligned memory allocation attempted
+ *							(must be released with am_aligned_free)
+ * false				- invalid arguments, overflow
  */
 bool am_aligned_malloc_array( void * restrict out_buffer_pointer, size_t alignment, size_t elements_amount, size_t element_size );
 #	ifndef AM_NO_REALLOC
@@ -99,52 +103,98 @@ bool am_aligned_malloc_array( void * restrict out_buffer_pointer, size_t alignme
  * reallocate aligned memory block
  *
  * Precondition:
- * pointer		- must be previously allocated with an am_aligned_malloc
- * size_new		- must be positive
+ * pointer_original			- must be previously allocated with an am_aligned_malloc
+ * size_new					- must be positive
  *
  * Parameters:
- * pointer		- existing aligned memory block
- * size_new		- size of desired memory block to reallocate
+ * out_buffer_pointer		- holder to allocated memory
+ * pointer_original			- existing aligned memory block
+ * size_new					- size of desired memory block to reallocate
  *
  * Returns:
- * -1					- invalid arguments, overflow
- * 0					- memory reallocated successfully
- * 1					- out of memory
+ * SA_ALLOC_OVERFLOW(-1)	- invalid arguments, overflow
+ * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
+ * SA_ALLOC_FAILURE	(1)		- out of memory
  */
 enum sa_allocation_status am_aligned_realloc( void * restrict out_buffer_pointer, void * restrict pointer_original, size_t size_new );
 /* Function:
- * safe version of am_aligned_realloc
+ * safe version of am_aligned_realloc with array bounds checking
  *
  * Precondition:
- * pointer			- must be previously allocated with an am_aligned_malloc
- * elements_amount	- must be positive
- * element_size		- must be positive
+ * pointer_original			- must be previously allocated with an am_aligned_malloc
+ * elements_amount			- must be positive
+ * element_size				- must be positive
  *
  * Parameters:
- * pointer			- existing aligned memory block
- * elements_amount	- amount of elements
- * element_size		- size of each element
+ * out_buffer_pointer		- holder to allocated memory
+ * pointer_original			- existing aligned memory block
+ * elements_amount			- amount of elements
+ * element_size				- size of each element
  *
  * Returns:
- * -1					- invalid arguments, overflow
- * 0					- memory reallocated successfully
- * 1					- out of memory
+ * SA_ALLOC_OVERFLOW(-1)	- invalid arguments, overflow
+ * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
+ * SA_ALLOC_FAILURE	(1)		- out of memory
  */
 enum sa_allocation_status am_aligned_realloc_array( void * restrict out_buffer_pointer, void * restrict pointer_original, size_t elements_amount, size_t element_size );
+#		ifndef AM_NO_CALLOC
+/* Function:
+ * reallocate aligned memory block and zero out a specified tail portion
+ *
+ * Precondition:
+ * out_buffer_pointer		- holder to allocated memory
+ * pointer					- must be previously allocated with an am_aligned_malloc
+ * size_new					- must be positive
+ *
+ * Parameters:
+ * out_buffer_pointer		- holder to allocated memory
+ * pointer					- existing aligned memory block
+ * size_to_preserve			- size of memory block from the beginning to save
+ * size_new					- new total size of memory block in bytes
+ *
+ * Returns:
+ * SA_ALLOC_OVERFLOW(-1)	- invalid arguments, overflow
+ * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
+ * SA_ALLOC_FAILURE	(1)		- out of memory
+ */
+enum sa_allocation_status am_aligned_recalloc( void * out_buffer_pointer, void * pointer, size_t size_to_preserve, size_t size_new );
+/* Function:
+ * safe version of am_aligned_recalloc with array bounds checking
+ *
+ * Precondition:
+ * pointer					- must be previously allocated with an am_aligned_malloc
+ * elements_amount			- must be positive
+ * element_size				- must be positive
+ *
+ * Parameters:
+ * out_buffer_pointer		- holder to allocated memory
+ * pointer					- existing aligned memory block
+ * elements_to_preserve		- amount of elements from the beginning to save
+ * elements_amount			- amount of elements
+ * element_size				- size of each element
+ *
+ * Returns:
+ * SA_ALLOC_OVERFLOW(-1)	- invalid arguments, overflow
+ * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
+ * SA_ALLOC_FAILURE	(1)		- out of memory
+ */
+enum sa_allocation_status am_aligned_recalloc_array( void * out_buffer_pointer, void * pointer, size_t elements_to_preserve, size_t elements_amount, size_t element_size );
+#		endif /* AM_NO_CALLOC */
 #	endif /* AM_NO_REALLOC */
 #	ifndef AM_NO_CALLOC
 /* Function:
  * allocate zero-initialized aligned memory for an array
  *
  * Parameters:
- * alignment		- desired address alignment
- * elements_amount	- amount of elements
- * element_size		- size of each element
+ * out_buffer_pointer	- holder to allocated memory
+ * alignment			- desired address alignment
+ * elements_amount		- amount of elements
+ * element_size			- size of each element
  *
  * Returns:
- * pointer			- zero-filled aligned memory was allocated
- *						(must be released with am_aligned_free)
- * NULL				- invalid arguments, potential overflow or allocation failure
+ * true					- math is safe, aligned zero-filled memory allocation attempted
+ *							(must be released with am_aligned_free)
+ * false				- invalid arguments, overflow
  */
 bool am_aligned_calloc( void * restrict out_buffer_pointer, size_t alignment, size_t elements_amount, size_t element_size );
 #	endif /* AM_NO_CALLOC */
