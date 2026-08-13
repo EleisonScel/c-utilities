@@ -315,6 +315,43 @@ bool am_aligned_calloc(
 #endif /* AM_NO_CALLOC */
 
 #ifndef AM_NO_REALLOC
+#	ifndef AM_NO_CALLOC
+enum sa_allocation_status am_aligned_recalloc(
+		void * out_buffer_pointer, void * pointer, size_t size_to_preserve, size_t size_new
+	)
+{
+	enum sa_allocation_status result_status = am_aligned_realloc(
+		out_buffer_pointer, pointer, size_new
+	);
+
+	if( result_status == SA_ALLOC_SUCCESS && size_new > size_to_preserve ) {
+		void * new_pointer = NULL;
+		memcpy( &new_pointer, out_buffer_pointer, sizeof(void *) );
+		memset(
+			(char *) new_pointer + size_to_preserve,
+			0,
+			size_new - size_to_preserve
+		);
+	}
+
+	return result_status;
+}
+
+enum sa_allocation_status am_aligned_recalloc_array(
+		void * out_buffer_pointer, void * pointer,
+		size_t elements_to_preserve, size_t elements_amount, size_t element_size
+	)
+{
+	size_t size_old;
+	size_t total_bytes = sa_check_array_bounds( elements_amount, element_size );
+	if( total_bytes == 0 ||
+		sa_ovf_mul_size_t( element_size, elements_to_preserve, &size_old ) == true )
+		return SA_ALLOC_OVERFLOW;
+
+	return am_aligned_recalloc( out_buffer_pointer, pointer, size_old, total_bytes );
+}
+#	endif /* AM_NO_CALLOC */
+
 enum sa_allocation_status am_aligned_realloc_array(
 		void * out_buffer_pointer, void * pointer, size_t elements_amount, size_t element_size
 	)
@@ -379,7 +416,7 @@ static enum sa_allocation_status am_aligned_realloc_windows(
 	if ( raw_memory_pointer_new == NULL )
 		return SA_ALLOC_FAILURE;
 
-	header_new = (struct AM_Alignment_Header_Info) { alignment };
+	header_new = (struct AM_Alignment_Header_Info) { .alignment = alignment };
 	memcpy( raw_memory_pointer_new, &header_new, AM_HEADER_SIZE );
 	result_pointer = (void *) ((char *) raw_memory_pointer_new + AM_HEADER_SIZE);
 
