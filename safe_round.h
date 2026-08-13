@@ -15,8 +15,8 @@
 
 /* Portable safe rounding to a multiple.
  *
- * Every sa_round_<direction>_<type> function round value to the nearest multiple of mathematical
- * modulus.
+ * Every sa_ovf_round_<direction>_<type> function round value to the nearest multiple
+ * of mathematical modulus.
  * All operations are performed without undefined and platform defined behavior.
  *
  * Precondition:
@@ -48,7 +48,7 @@
 #	include <stdbool.h>	/* bool		*/
 
 #	ifdef UINT64_MAX
-static inline bool sa_round_up_uint64_t(
+static inline bool sa_ovf_round_up_uint64_t(
 		uint64_t value_to_round, uint64_t modulus, uint64_t * result_pointer
 	)
 {
@@ -65,7 +65,7 @@ static inline bool sa_round_up_uint64_t(
 	return sa_ovf_add_uint64_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_uint64_t(
+static inline bool sa_ovf_round_down_uint64_t(
 		uint64_t value_to_round, uint64_t modulus, uint64_t * result_pointer
 	)
 {
@@ -79,7 +79,7 @@ static inline bool sa_round_down_uint64_t(
 #	endif /* UINT64_MAX */
 
 #	ifdef INT64_MAX
-static inline bool sa_round_up_int64_t(
+static inline bool sa_ovf_round_up_int64_t(
 		int64_t value_to_round, int64_t modulus, int64_t * result_pointer
 	)
 {
@@ -98,7 +98,7 @@ static inline bool sa_round_up_int64_t(
 	return sa_ovf_add_int64_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_int64_t(
+static inline bool sa_ovf_round_down_int64_t(
 		int64_t value_to_round, int64_t modulus, int64_t * result_pointer
 	)
 {
@@ -116,7 +116,7 @@ static inline bool sa_round_down_int64_t(
 #	endif /* INT64_MAX */
 
 #   ifdef UINT32_MAX
-static inline bool sa_round_up_uint32_t(
+static inline bool sa_ovf_round_up_uint32_t(
         uint32_t value_to_round, uint32_t modulus, uint32_t * result_pointer
     )
 {
@@ -133,7 +133,7 @@ static inline bool sa_round_up_uint32_t(
     return sa_ovf_add_uint32_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_uint32_t(
+static inline bool sa_ovf_round_down_uint32_t(
         uint32_t value_to_round, uint32_t modulus, uint32_t * result_pointer
     )
 {
@@ -147,7 +147,7 @@ static inline bool sa_round_down_uint32_t(
 #   endif /* UINT32_MAX */
 
 #   ifdef INT32_MAX
-static inline bool sa_round_up_int32_t(
+static inline bool sa_ovf_round_up_int32_t(
         int32_t value_to_round, int32_t modulus, int32_t * result_pointer
     )
 {
@@ -166,7 +166,7 @@ static inline bool sa_round_up_int32_t(
     return sa_ovf_add_int32_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_int32_t(
+static inline bool sa_ovf_round_down_int32_t(
         int32_t value_to_round, int32_t modulus, int32_t * result_pointer
     )
 {
@@ -184,7 +184,7 @@ static inline bool sa_round_down_int32_t(
 #   endif /* INT32_MAX */
 
 #   ifdef UINT16_MAX
-static inline bool sa_round_up_uint16_t(
+static inline bool sa_ovf_round_up_uint16_t(
         uint16_t value_to_round, uint16_t modulus, uint16_t * result_pointer
     )
 {
@@ -201,7 +201,7 @@ static inline bool sa_round_up_uint16_t(
     return sa_ovf_add_uint16_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_uint16_t(
+static inline bool sa_ovf_round_down_uint16_t(
         uint16_t value_to_round, uint16_t modulus, uint16_t * result_pointer
     )
 {
@@ -215,7 +215,7 @@ static inline bool sa_round_down_uint16_t(
 #   endif /* UINT16_MAX */
 
 #   ifdef INT16_MAX
-static inline bool sa_round_up_int16_t(
+static inline bool sa_ovf_round_up_int16_t(
         int16_t value_to_round, int16_t modulus, int16_t * result_pointer
     )
 {
@@ -234,7 +234,7 @@ static inline bool sa_round_up_int16_t(
     return sa_ovf_add_int16_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_int16_t(
+static inline bool sa_ovf_round_down_int16_t(
         int16_t value_to_round, int16_t modulus, int16_t * result_pointer
     )
 {
@@ -252,7 +252,7 @@ static inline bool sa_round_down_int16_t(
 #   endif /* INT16_MAX */
 
 #   ifdef UINT8_MAX
-static inline bool sa_round_up_uint8_t(
+static inline bool sa_ovf_round_up_uint8_t(
         uint8_t value_to_round, uint8_t modulus, uint8_t * result_pointer
     )
 {
@@ -269,7 +269,7 @@ static inline bool sa_round_up_uint8_t(
     return sa_ovf_add_uint8_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_uint8_t(
+static inline bool sa_ovf_round_down_uint8_t(
         uint8_t value_to_round, uint8_t modulus, uint8_t * result_pointer
     )
 {
@@ -283,7 +283,7 @@ static inline bool sa_round_down_uint8_t(
 #   endif /* UINT8_MAX */
 
 #   ifdef INT8_MAX
-static inline bool sa_round_up_int8_t(
+static inline bool sa_ovf_round_up_int8_t(
         int8_t value_to_round, int8_t modulus, int8_t * result_pointer
     )
 {
@@ -302,7 +302,7 @@ static inline bool sa_round_up_int8_t(
     return sa_ovf_add_int8_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_int8_t(
+static inline bool sa_ovf_round_down_int8_t(
         int8_t value_to_round, int8_t modulus, int8_t * result_pointer
     )
 {
@@ -319,7 +319,7 @@ static inline bool sa_round_down_int8_t(
 }
 #   endif /* INT8_MAX */
 
-static inline bool sa_round_up_uintmax_t(
+static inline bool sa_ovf_round_up_uintmax_t(
         uintmax_t value_to_round, uintmax_t modulus, uintmax_t * result_pointer
     )
 {
@@ -336,7 +336,7 @@ static inline bool sa_round_up_uintmax_t(
     return sa_ovf_add_uintmax_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_uintmax_t(
+static inline bool sa_ovf_round_down_uintmax_t(
         uintmax_t value_to_round, uintmax_t modulus, uintmax_t * result_pointer
     )
 {
@@ -348,7 +348,7 @@ static inline bool sa_round_down_uintmax_t(
     return false;
 }
 
-static inline bool sa_round_up_intmax_t(
+static inline bool sa_ovf_round_up_intmax_t(
         intmax_t value_to_round, intmax_t modulus, intmax_t * result_pointer
     )
 {
@@ -367,7 +367,7 @@ static inline bool sa_round_up_intmax_t(
     return sa_ovf_add_intmax_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_intmax_t(
+static inline bool sa_ovf_round_down_intmax_t(
         intmax_t value_to_round, intmax_t modulus, intmax_t * result_pointer
     )
 {
@@ -384,7 +384,7 @@ static inline bool sa_round_down_intmax_t(
 }
 
 #   ifdef UINTPTR_MAX
-static inline bool sa_round_up_uintptr_t(
+static inline bool sa_ovf_round_up_uintptr_t(
         uintptr_t value_to_round, uintptr_t modulus, uintptr_t * result_pointer
     )
 {
@@ -401,7 +401,7 @@ static inline bool sa_round_up_uintptr_t(
     return sa_ovf_add_uintptr_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_uintptr_t(
+static inline bool sa_ovf_round_down_uintptr_t(
         uintptr_t value_to_round, uintptr_t modulus, uintptr_t * result_pointer
     )
 {
@@ -415,7 +415,7 @@ static inline bool sa_round_down_uintptr_t(
 #   endif /* UINTPTR_MAX */
 
 #   ifdef INTPTR_MAX
-static inline bool sa_round_up_intptr_t(
+static inline bool sa_ovf_round_up_intptr_t(
         intptr_t value_to_round, intptr_t modulus, intptr_t * result_pointer
     )
 {
@@ -434,7 +434,7 @@ static inline bool sa_round_up_intptr_t(
     return sa_ovf_add_intptr_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_intptr_t(
+static inline bool sa_ovf_round_down_intptr_t(
         intptr_t value_to_round, intptr_t modulus, intptr_t * result_pointer
     )
 {
@@ -451,7 +451,7 @@ static inline bool sa_round_down_intptr_t(
 }
 #   endif /* INTPTR_MAX */
 
-static inline bool sa_round_up_size_t(
+static inline bool sa_ovf_round_up_size_t(
         size_t value_to_round, size_t modulus, size_t * result_pointer
     )
 {
@@ -468,7 +468,7 @@ static inline bool sa_round_up_size_t(
     return sa_ovf_add_size_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_size_t(
+static inline bool sa_ovf_round_down_size_t(
         size_t value_to_round, size_t modulus, size_t * result_pointer
     )
 {
@@ -480,7 +480,7 @@ static inline bool sa_round_down_size_t(
     return false;
 }
 
-static inline bool sa_round_up_ptrdiff_t(
+static inline bool sa_ovf_round_up_ptrdiff_t(
         ptrdiff_t value_to_round, ptrdiff_t modulus, ptrdiff_t * result_pointer
     )
 {
@@ -499,7 +499,7 @@ static inline bool sa_round_up_ptrdiff_t(
     return sa_ovf_add_ptrdiff_t( value_to_round, modulus - remainder, result_pointer );
 }
 
-static inline bool sa_round_down_ptrdiff_t(
+static inline bool sa_ovf_round_down_ptrdiff_t(
         ptrdiff_t value_to_round, ptrdiff_t modulus, ptrdiff_t * result_pointer
     )
 {
