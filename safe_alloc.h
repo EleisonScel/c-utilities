@@ -36,7 +36,7 @@ enum sa_allocation_status {
 static inline size_t sa_check_array_bounds( size_t elements_amount, size_t element_size );
 
 /* Function:
- * safe version of malloc
+ * safe version of malloc with array bounds checking
  *
  * out_buffer_pointer	- holder to allocated memory
  * elements_amount		- desired amount of elements
@@ -65,7 +65,7 @@ static inline bool sa_malloc_array(
 }
 
 /* Function:
- * safe version of calloc
+ * safe version of calloc with array bounds checking
  *
  * out_buffer_pointer	- holder to allocated memory
  * elements_amount		- desired amount of elements
@@ -92,17 +92,17 @@ static inline bool sa_calloc_array(
 }
 
 /* Function:
- * safe version of realloc
+ * safe version of realloc with array bounds checking
  *
- * out_buffer_pointer	- holder to allocated memory
- * pointer_original		- original memory pointer
- * elements_amount		- desired amount of elements
- * element_size			- size of each element
+ * out_buffer_pointer		- holder to allocated memory
+ * pointer_original			- original memory pointer
+ * elements_amount			- desired amount of elements
+ * element_size				- size of each element
  *
  * Returns:
- * -1					- invalid arguments, overflow
- * 0					- memory reallocated successfully
- * 1					- out of memory
+ * SA_ALLOC_OVERFLOW(-1)	- invalid arguments, overflow
+ * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
+ * SA_ALLOC_FAILURE	(1)		- out of memory
  */
 static inline enum sa_allocation_status sa_realloc_array(
 		void * out_buffer_pointer, void * pointer_original, size_t elements_amount,
@@ -123,18 +123,18 @@ static inline enum sa_allocation_status sa_realloc_array(
 }
 
 /* Function:
- * safe version of realloc with nullification of a new data
+ * safe version of realloc with nullification of a new data with array bounds checking
  *
- * out_buffer_pointer	- holder to allocated memory
- * pointer_original		- original memory pointer
- * elements_amount_old	- old amount of elements
- * elements_amount_new	- desired amount of elements
- * element_size			- size of each element
+ * out_buffer_pointer		- holder to allocated memory
+ * pointer_original			- original memory pointer
+ * elements_amount_old		- old amount of elements
+ * elements_amount_new		- desired amount of elements
+ * element_size				- size of each element
  *
  * Returns:
- * -1					- invalid arguments, overflow
- * 0					- memory reallocated successfully
- * 1					- out of memory
+ * SA_ALLOC_OVERFLOW(-1)	- invalid arguments, overflow
+ * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
+ * SA_ALLOC_FAILURE	(1)		- out of memory
  */
 static inline enum sa_allocation_status sa_recalloc_array(
 		void * out_buffer_pointer, void * pointer_original, size_t elements_amount_old,
