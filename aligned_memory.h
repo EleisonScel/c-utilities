@@ -116,7 +116,7 @@ bool am_aligned_malloc_array( void * restrict out_buffer_pointer, size_t alignme
  * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
  * SA_ALLOC_FAILURE	(1)		- out of memory
  */
-enum sa_allocation_status am_aligned_realloc( void * restrict out_buffer_pointer, void * restrict pointer_original, size_t size_new );
+enum sa_allocation_status am_aligned_realloc( void * out_buffer_pointer, void * pointer_original, size_t size_new );
 /* Function:
  * safe version of am_aligned_realloc with array bounds checking
  *
@@ -136,7 +136,7 @@ enum sa_allocation_status am_aligned_realloc( void * restrict out_buffer_pointer
  * SA_ALLOC_SUCCESS	(0)		- memory reallocated successfully
  * SA_ALLOC_FAILURE	(1)		- out of memory
  */
-enum sa_allocation_status am_aligned_realloc_array( void * restrict out_buffer_pointer, void * restrict pointer_original, size_t elements_amount, size_t element_size );
+enum sa_allocation_status am_aligned_realloc_array( void * out_buffer_pointer, void * pointer_original, size_t elements_amount, size_t element_size );
 #		ifndef AM_NO_CALLOC
 /* Function:
  * reallocate aligned memory block and zero out a specified tail portion
