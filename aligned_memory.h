@@ -24,7 +24,10 @@
 #ifndef ALIGNED_MEMORY_H
 #define ALIGNED_MEMORY_H
 
-#  include <stddef.h> /* size_t */
+#	include "safe_alloc.h"	/* enum sa_allocation_status */
+
+#	include <stddef.h>		/* size_t	*/
+#	include <stdbool.h>		/* bool		*/
 
 /* Logic to choose the alignment backend
  *
@@ -64,7 +67,7 @@
  * Parameters:
  * pointer - pointer to memory block previously allocated with an am_aligned_malloc
  */
-void am_aligned_free( void * restrict pointer );
+void am_aligned_free( void * restrict buffer_pointer );
 
 /* Function:
  * allocate aligned memory block
@@ -77,7 +80,7 @@ void am_aligned_free( void * restrict pointer );
  * pointer		- block was allocated (must be released with am_aligned_free)
  * NULL			- invalid arguments or allocation failure
  */
-void * am_aligned_malloc( size_t alignment, size_t size );
+bool am_aligned_malloc( void * restrict out_buffer_pointer, size_t alignment, size_t size );
 /* Function:
  * safe version of am_aligned_malloc
  *
@@ -90,7 +93,7 @@ void * am_aligned_malloc( size_t alignment, size_t size );
  * pointer			- block was allocated (must be released with am_aligned_free)
  * NULL				- potential overflow, invalid arguments or allocation failure
  */
-void * am_aligned_malloc_array( size_t alignment, size_t elements_amount, size_t element_size );
+bool am_aligned_malloc_array( void * restrict out_buffer_pointer, size_t alignment, size_t elements_amount, size_t element_size );
 #	ifndef AM_NO_REALLOC
 /* Function:
  * reallocate aligned memory block
@@ -104,10 +107,11 @@ void * am_aligned_malloc_array( size_t alignment, size_t elements_amount, size_t
  * size_new		- size of desired memory block to reallocate
  *
  * Returns:
- * pointer		- block was reallocated
- * NULL			- invalid arguments or failed to allocate memory block
+ * -1					- invalid arguments, overflow
+ * 0					- memory reallocated successfully
+ * 1					- out of memory
  */
-void * am_aligned_realloc( void * restrict pointer, size_t size_new );
+enum sa_allocation_status am_aligned_realloc( void * restrict out_buffer_pointer, void * restrict pointer_original, size_t size_new );
 /* Function:
  * safe version of am_aligned_realloc
  *
@@ -122,10 +126,11 @@ void * am_aligned_realloc( void * restrict pointer, size_t size_new );
  * element_size		- size of each element
  *
  * Returns:
- * pointer			- block was reallocated
- * NULL				- invalid arguments, overflow or failed to allocate memory block
+ * -1					- invalid arguments, overflow
+ * 0					- memory reallocated successfully
+ * 1					- out of memory
  */
-void * am_aligned_realloc_array( void * restrict pointer, size_t elements_amount, size_t element_size );
+enum sa_allocation_status am_aligned_realloc_array( void * restrict out_buffer_pointer, void * restrict pointer_original, size_t elements_amount, size_t element_size );
 #	endif /* AM_NO_REALLOC */
 #	ifndef AM_NO_CALLOC
 /* Function:
@@ -141,7 +146,7 @@ void * am_aligned_realloc_array( void * restrict pointer, size_t elements_amount
  *						(must be released with am_aligned_free)
  * NULL				- invalid arguments, potential overflow or allocation failure
  */
-void * am_aligned_calloc( size_t alignment, size_t elements_amount, size_t element_size );
+bool am_aligned_calloc( void * restrict out_buffer_pointer, size_t alignment, size_t elements_amount, size_t element_size );
 #	endif /* AM_NO_CALLOC */
 
 #endif/* ALIGNED_MEMORY_H */
