@@ -137,9 +137,28 @@ void * rb_ring_buffer_peek( const struct RB_Ring_Buffer * restrict ring_buffer_p
 		ring_buffer_pointer->amount == 0 )
 		return NULL;
 
-	return (const char *)
+	return (char *)
 		ring_buffer_pointer->data_pointer +
 			ring_buffer_pointer->first * ring_buffer_pointer->element_size;
+}
+
+void * rb_ring_buffer_peek_position(
+		const struct RB_Ring_Buffer * restrict ring_buffer_pointer, size_t index
+	)
+{
+	if( assert_check_m( ring_buffer_pointer != NULL, "No ring buffer found" ) == false ||
+		ring_buffer_pointer->amount <= index )
+		return NULL;
+
+	size_t elements_at_right = ring_buffer_pointer->capacity - ring_buffer_pointer->first;
+
+	if ( elements_at_right > index )
+		return (void *) ((char *) ring_buffer_pointer->data_pointer +
+			(ring_buffer_pointer->first + index) * ring_buffer_pointer->element_size );
+
+	return (void *)
+		( (char *) ring_buffer_pointer->data_pointer +
+			(index - elements_at_right) * ring_buffer_pointer->element_size );
 }
 
 bool rb_ring_buffer_push(
