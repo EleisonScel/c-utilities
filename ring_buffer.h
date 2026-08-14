@@ -15,8 +15,8 @@
 
 #pragma once
 
-#ifndef RB_RING_BUFFER_H
-#define RB_RING_BUFFER_H
+#ifndef RING_BUFFER_H
+#define RING_BUFFER_H
 
 #	include <stddef.h>	/* size_t	*/
 #	include <stdbool.h>	/* bool		*/
@@ -227,4 +227,4 @@ bool rb_ring_buffer_create( struct RB_Ring_Buffer * restrict * restrict out_ring
  */
 bool rb_ring_buffer_ensure_capacity( struct RB_Ring_Buffer * restrict ring_buffer_pointer, size_t capacity_desired );
 
-#endif /* RB_RING_BUFFER_H */
+#endif /* RING_BUFFER_H */
