@@ -60,6 +60,21 @@ void * rb_ring_buffer_pop( struct RB_Ring_Buffer * restrict ring_buffer_pointer 
  * NULL					- invalid arguments
  */
 void * rb_ring_buffer_peek( const struct RB_Ring_Buffer * restrict ring_buffer_pointer );
+/* Function:
+ * peek at the index element of the ring buffer without removing it
+ *
+ * Precondition:
+ * ring_buffer_pointer	- isn't NULL
+ *
+ * Parameters:
+ * ring_buffer_pointer	- ring buffer pointer
+ * index				- logical index of the element [0; amount of elements)
+ *
+ * Returns:
+ * pointer				- pointer to the element at the given index
+ * NULL					- invalid arguments, index out of bounds
+ */
+void * rb_ring_buffer_peek_position( const struct RB_Ring_Buffer * restrict ring_buffer_pointer, size_t index );
 
 /* Function:
  * push an element to the ring buffer
