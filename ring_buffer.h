@@ -56,10 +56,10 @@ void * rb_ring_buffer_pop( struct RB_Ring_Buffer * restrict ring_buffer_pointer 
  * ring_buffer_pointer	- ring buffer pointer
  *
  * Returns:
- * pointer				- constant pointer of the first element gotten successfully
+ * pointer				- pointer of the first element gotten successfully
  * NULL					- invalid arguments
  */
-const void * rb_ring_buffer_peek( const struct RB_Ring_Buffer * restrict ring_buffer_pointer );
+void * rb_ring_buffer_peek( const struct RB_Ring_Buffer * restrict ring_buffer_pointer );
 
 /* Function:
  * push an element to the ring buffer
