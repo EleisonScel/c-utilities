@@ -132,7 +132,7 @@ void * rb_ring_buffer_pop( struct RB_Ring_Buffer * restrict ring_buffer_pointer 
 	return element_pointer;
 }
 
-const void * rb_ring_buffer_peek( const struct RB_Ring_Buffer * restrict ring_buffer_pointer ) {
+void * rb_ring_buffer_peek( const struct RB_Ring_Buffer * restrict ring_buffer_pointer ) {
 	if( assert_check_m( ring_buffer_pointer != NULL, "No ring buffer found" ) == false ||
 		ring_buffer_pointer->amount == 0 )
 		return NULL;
