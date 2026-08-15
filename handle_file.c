@@ -134,7 +134,7 @@ static int hf_file_close_internal( const char * restrict function_name_pointer, 
 static int hf_file_write_internal( const char * restrict file_path_pointer, const char * restrict data_pointer, size_t length, const char * restrict mode_pointer, const char * restrict function_name_pointer );
 static int hf_file_get_information( const char * restrict function_name_pointer, const char * restrict path_pointer, uint_least64_t * restrict out_file_size_pointer, FILE * restrict * restrict out_file_pointer );
 #ifdef RF_BACKEND_WINDOWS
-static int hf_resolve_path_windows( const char * restrict path_pointer, wchar_t * restrict wide_path_pointer, size_t wide_path_size, wchar_t * restrict * restrict out_wide_path_pointer );
+static int hf_resolve_path_windows( const char * restrict path_pointer, wchar_t * restrict wide_path_pointer, wchar_t * restrict * restrict out_wide_path_pointer );
 #elif defined(RF_BACKEND_FSEEKO) || defined(RF_BACKEND_STANDARD)
 static int hf_file_seek_get_size( const char * restrict function_name_pointer, FILE * restrict file_pointer, const char * restrict file_path_pointer, uint_least64_t * restrict out_file_size_pointer, bool needed_rewind );
 #endif /* RF_BACKEND_WINDOWS */
@@ -253,8 +253,7 @@ int hf_file_delete( const char * restrict path_pointer ) {
 	wchar_t * wide_path_buffer_pointer = wide_path_buffer + RF_UNIVERSAL_PREFIX_LENGTH;
 
 	int error_code = hf_resolve_path_windows(
-		path_pointer, wide_path_buffer, RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-		&wide_path_buffer_pointer
+		path_pointer, wide_path_buffer, &wide_path_buffer_pointer
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
@@ -293,8 +292,7 @@ int hf_file_rename_move(
 	wchar_t * wide_path_buffer_pointer_old = wide_path_buffer_old + RF_UNIVERSAL_PREFIX_LENGTH;
 
 	int error_code = hf_resolve_path_windows(
-		path_pointer_old, wide_path_buffer_old, RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-		&wide_path_buffer_pointer_old
+		path_pointer_old, wide_path_buffer_old, &wide_path_buffer_pointer_old
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
@@ -302,8 +300,7 @@ int hf_file_rename_move(
 	wchar_t * wide_path_buffer_pointer_new = wide_path_buffer_new + RF_UNIVERSAL_PREFIX_LENGTH;
 
 	error_code = hf_resolve_path_windows(
-		path_pointer_new, wide_path_buffer_new, RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-		&wide_path_buffer_pointer_new
+		path_pointer_new, wide_path_buffer_new, &wide_path_buffer_pointer_new
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
@@ -377,8 +374,7 @@ bool hf_file_is_exists( const char * restrict path_pointer ) {
 	wchar_t * wide_path_buffer_pointer = wide_path_buffer + RF_UNIVERSAL_PREFIX_LENGTH;
 
 	if ( hf_resolve_path_windows(
-			path_pointer, wide_path_buffer, RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-			&wide_path_buffer_pointer
+			path_pointer, wide_path_buffer, &wide_path_buffer_pointer
 		) != RF_SUCCESS)
 		return false;
 
@@ -683,8 +679,7 @@ static int hf_file_copy_internal(
 		wide_path_buffer_source + RF_UNIVERSAL_PREFIX_LENGTH;
 
 	int error_code = hf_resolve_path_windows(
-		path_pointer_source, wide_path_buffer_source, RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-		&wide_path_buffer_pointer_source
+		path_pointer_source, wide_path_buffer_source, &wide_path_buffer_pointer_source
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
@@ -695,7 +690,7 @@ static int hf_file_copy_internal(
 
 	error_code = hf_resolve_path_windows(
 		path_pointer_destination, wide_path_buffer_destination,
-		RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE, &wide_path_buffer_pointer_destination
+		&wide_path_buffer_pointer_destination
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
@@ -933,8 +928,7 @@ static int hf_file_open(
 	wchar_t * wide_path_buffer_pointer = wide_path_buffer + RF_UNIVERSAL_PREFIX_LENGTH;
 
 	int error_code = hf_resolve_path_windows(
-		file_path_pointer, wide_path_buffer, RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-		&wide_path_buffer_pointer
+		file_path_pointer, wide_path_buffer, &wide_path_buffer_pointer
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
@@ -1020,7 +1014,6 @@ static int hf_file_open_for_read(
  * Parameters:
  * path_pointer			- UTF-8 path
  * wide_path_pointer	- pointer to store wide path
- * wide_path_size		- pointer to store wide path buffer
  * out_wide_path_pointer- pointer to store resolved wide path
  *
  * Returns:
@@ -1029,16 +1022,12 @@ static int hf_file_open_for_read(
  */
 static int hf_resolve_path_windows(
 		const char * restrict path_pointer, wchar_t * restrict wide_path_pointer,
-		size_t wide_path_size, wchar_t * restrict * restrict out_wide_path_pointer
+		wchar_t * restrict * restrict out_wide_path_pointer
 	)
 {
 	assert_m( path_pointer			!= NULL, "No path found"					);
 	assert_m( wide_path_pointer		!= NULL, "No wide path found"				);
 	assert_m( out_wide_path_pointer	!= NULL, "No place to write wide path found");
-	assert_m(
-		wide_path_size >= RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-		"wide path size exceed the limits"
-	);
 
 	wchar_t * wide_path_buffer_pointer = wide_path_pointer + RF_UNIVERSAL_PREFIX_LENGTH;
 
@@ -1182,8 +1171,7 @@ static int hf_file_get_information(
 	wchar_t * wide_path_buffer_pointer = wide_path_buffer + RF_UNIVERSAL_PREFIX_LENGTH;
 
 	int error_code = hf_resolve_path_windows(
-		path_pointer, wide_path_buffer, RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE,
-		&wide_path_buffer_pointer
+		path_pointer, wide_path_buffer, &wide_path_buffer_pointer
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
