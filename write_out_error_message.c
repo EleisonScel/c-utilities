@@ -18,10 +18,13 @@
 #include "dynamic_array.h"	/* da_dynamic_array_shrink	*/
 #include "assert_m.h"		/* assert_m					*/
 
+#include <limits.h>	/* INT_MAX	*/
+
 #include <stdio.h>	/* vsnprintf*/
 #include <stdarg.h>	/* va_list	*/
 #include <stddef.h>	/* size_t	*/
 #include <stdlib.h>	/* malloc	*/
+#include <stdint.h> /* SIZE_MAX */
 #include <stdbool.h>/* bool		*/
 
 #define WOEM_STATIC_CAPACITY	8
