@@ -22,6 +22,53 @@
 #	include <stddef.h>	/* size_t			*/
 #	include <stdbool.h>	/* bool				*/
 
+#	ifdef HF_ADD_MEMORY_MAP
+
+#		ifdef _WIN32
+#			define WIN32_LEAN_AND_MEAN
+#			define NOMINMAX
+#			include <windows.h>	/* GetFileAttributesExW	*/
+#		endif /* _WIN32 */
+
+struct HF_File_Mapping {
+	unsigned char * data_pointer;
+	size_t size;
+#	ifdef _WIN32
+	HANDLE file;
+	HANDLE map;
+#	else
+	int file_descriptor;
+#	endif /* _WIN32 */
+};
+
+/* Function:
+ * map a file into memory
+ *
+ * Parameters:
+ * out_mapping_pointer	- storage of the mapping structure
+ * path_pointer			- path to the object
+ *
+ * Returns:
+ * 0					- file mapped successfully
+ * < 0					- failed to close a file
+ * > 0					- wrong parameters, open, path conversion/resolution, extra large size
+ *							map creation failed
+ */
+int hf_file_map_initialize( struct HF_File_Mapping * restrict out_mapping_pointer, const char * restrict path_pointer );
+/* Function:
+ * unmap a file from memory and close its handles
+ *
+ * Parameters:
+ * mapping_pointer	- mapping structure pointer to deinitialize
+ *
+ * Returns:
+ * 0				- file unmapped and closed successfully
+ * < 0				- failed to close or unmap a file
+ * > 0				- wrong parameters
+ */
+int hf_file_map_deinitialize( struct HF_File_Mapping * restrict mapping_pointer );
+#	endif /* HF_ADD_MEMORY_MAP */
+
 /* Function:
  * check if file exists at the given path
  *
