@@ -104,6 +104,10 @@ enum {
 #		include <windows.h>	/* GetFileAttributesExW	*/
 #	endif /* _WIN32 */
 
+#ifndef INTPTR_MAX
+#	error "intptr_t isn't defined; it is required for safe Windows file type checking"
+#endif
+
 #	include <wchar.h>	/* wchar_t				*/
 #	include <io.h>		/* _wfopen				*/
 #	include <limits.h>	/* CHAR_BIT				*/
@@ -677,6 +681,12 @@ static int hf_file_map_initialize_windows(
 			path_pointer, GetLastError()
 		);
 		return RF_ERROR_OPEN;
+	}
+
+	if ( GetFileType( out_mapping_pointer->file ) != FILE_TYPE_DISK ) {
+		woem_push( "(hf_file_initialize_map) (%s) isn't a regular file", path_pointer );
+		error_code = RF_ERROR_NOT_A_FILE;
+		goto cleanup;
 	}
 
 	LARGE_INTEGER file_size;
@@ -1521,6 +1531,26 @@ static int hf_file_get_information(
 			);
 			return RF_ERROR_OPEN;
 		}
+		int file_descriptor = _fileno( *out_file_pointer );
+		if ( file_descriptor < 0 ) {
+			woem_push( "(%s) file descriptor retrieval failed", function_name_pointer );
+			error_code = RF_ERROR_ATTRIBUTES;
+			goto cleanup;
+		}
+		intptr_t window_file_handle = _get_osfhandle( file_descriptor );
+		if( window_file_handle == (intptr_t) INVALID_HANDLE_VALUE) {
+			woem_push(
+				"(%s) (%s) file handle failed to get", function_name_pointer, path_pointer
+			);
+			error_code = RF_ERROR_ATTRIBUTES;
+			goto cleanup;
+		}
+		DWORD file_type = GetFileType( (HANDLE) window_file_handle );
+		if ( file_type != FILE_TYPE_DISK ) {
+			woem_push("(%s) (%s) isn't a regular file", function_name_pointer, path_pointer);
+			error_code = RF_ERROR_NOT_A_FILE;
+			goto cleanup;
+		}
 	}
 
 #elif defined(RF_BACKEND_STAT)
@@ -1599,4 +1629,17 @@ static int hf_file_get_information(
 #endif /* RF_BACKEND_WINDOWS */
 
 	return RF_SUCCESS;
+
+#ifdef RF_BACKEND_WINDOWS
+cleanup:
+	if ( fclose( *out_file_pointer ) != 0 ) {
+		woem_push(
+			"(%s) closing file (%s) failed (%s)",
+			function_name_pointer, path_pointer, strerror(errno)
+		);
+	}
+	*out_file_pointer = NULL;
+
+	return error_code;
+#endif /* RF_BACKEND_WINDOWS */
 }
