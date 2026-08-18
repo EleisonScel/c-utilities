@@ -29,7 +29,25 @@
 #include <string.h>					/* strerror	*/
 #include <inttypes.h>				/* PRIu64	*/
 
+#ifdef HF_ADD_MEMORY_MAP
+
+#	if defined(_WIN32) || ((defined(__unix__) || defined(__APPLE__)) &&\
+		defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE + 0L) >= 200112L )
+#		define HF_MEMORY_MAP_NEEDED 1
+#	else
+#		error "Memory mapping isn't available, remove HF_ADD_MEMORY_MAP"
+#	endif /* _WIN32 || _POSIX_C_SOURCE */
+
+#else
+
+#		define HF_MEMORY_MAP_NEEDED 0
+
+#endif /* HF_ADD_MEMORY_MAP */
+
 enum {
+#if HF_MEMORY_MAP_NEEDED == 1
+	RF_ERROR_UNMAP				= -2,
+#endif
 	RF_ERROR_CLOSE				= -1,
 	RF_SUCCESS					= 0,
 
@@ -53,6 +71,9 @@ enum {
 	RF_ERROR_COPY,
 	RF_ERROR_DELETE,
 	RF_ERROR_RENAME_MOVE,
+#if HF_MEMORY_MAP_NEEDED == 1
+	RF_ERROR_MAP
+#endif
 };
 
 #if defined(RF_FORCE_WINDOWS) && !defined(_WIN32)
@@ -76,10 +97,14 @@ enum {
 #endif /* RF_BACKEND_<type> */
 
 #if defined(RF_BACKEND_WINDOWS)
-#	define WIN32_LEAN_AND_MEAN
-#	define NOMINMAX
+
+#	ifndef HF_ADD_MEMORY_MAP
+#		define WIN32_LEAN_AND_MEAN
+#		define NOMINMAX
+#		include <windows.h>	/* GetFileAttributesExW	*/
+#	endif /* _WIN32 */
+
 #	include <wchar.h>	/* wchar_t				*/
-#	include <windows.h>	/* GetFileAttributesExW	*/
 #	include <io.h>		/* _wfopen				*/
 #	include <limits.h>	/* CHAR_BIT				*/
 static_assert_m( sizeof(wchar_t) > 1, "wchar_t must be larger than 1 byte" );
@@ -123,8 +148,31 @@ static_assert_m(
 #	endif
 #endif /* RF_BACKEND_WINDOWS */
 
-static bool hf_path_has_wide_prefix( const wchar_t path_array[static 4] );
-static bool hf_path_has_universal_naming_convention_prefix( const wchar_t path_array[static 2] );
+#if (HF_MEMORY_MAP_NEEDED == 1)
+
+#	ifndef _WIN32
+#		ifndef RF_BACKEND_STAT
+#			include <sys/stat.h>/* fstat*/
+#		endif
+#		include <sys/mman.h>/* mmap */
+#		include <fcntl.h>	/* open */
+#		include <unistd.h>	/* close*/
+static_assert_m(
+	sizeof(off_t) <= sizeof(uint_least64_t),
+	"program can't handle file size check on preprocessor level"
+);
+static int hf_file_map_initialize_posix( struct HF_File_Mapping * restrict out_mapping_pointer, const char * restrict path_pointer );
+#	else
+static_assert_m(
+	sizeof(LONGLONG) <= sizeof(uint_least64_t),
+	"program can't handle file size check on preprocessor level"
+);
+static int hf_file_map_initialize_windows( struct HF_File_Mapping * restrict out_mapping_pointer, const char * restrict path_pointer );
+#	endif /* _WIN32 */
+
+static void hf_file_map_reset( struct HF_File_Mapping * restrict out_mapping_pointer );
+
+#endif /* HF_MEMORY_MAP_NEEDED == 1 */
 
 static int hf_file_seek( const char * restrict function_name_pointer, FILE * restrict file_pointer, const char * restrict path_pointer, uint_least64_t position_to_read_from );
 static int hf_file_open( const char * restrict file_path_pointer, const char * restrict mode_pointer, FILE * restrict * restrict out_file_pointer );
@@ -135,6 +183,8 @@ static int hf_file_write_internal( const char * restrict file_path_pointer, cons
 static int hf_file_get_information( const char * restrict function_name_pointer, const char * restrict path_pointer, uint_least64_t * restrict out_file_size_pointer, FILE * restrict * restrict out_file_pointer );
 #ifdef RF_BACKEND_WINDOWS
 static int hf_resolve_path_windows( const char * restrict path_pointer, wchar_t * restrict wide_path_pointer, wchar_t * restrict * restrict out_wide_path_pointer );
+static bool hf_path_has_wide_prefix( const wchar_t path_array[static 4] );
+static bool hf_path_has_universal_naming_convention_prefix( const wchar_t path_array[static 2] );
 #elif defined(RF_BACKEND_FSEEKO) || defined(RF_BACKEND_STANDARD)
 static int hf_file_seek_get_size( const char * restrict function_name_pointer, FILE * restrict file_pointer, const char * restrict file_path_pointer, uint_least64_t * restrict out_file_size_pointer, bool needed_rewind );
 #endif /* RF_BACKEND_WINDOWS */
@@ -158,6 +208,9 @@ int hf_file_read(
 
 	int error_code = hf_file_open_for_read( path_pointer, &file_pointer, &file_size );
 	if ( error_code != RF_SUCCESS ) return error_code;
+
+	if ( file_size == 0 )
+		goto cleanup;
 
 	text_pointer = malloc( file_size + 1 );
 	if ( text_pointer == NULL ) {
@@ -515,6 +568,272 @@ cleanup:
 		"hf_file_chunk_write", file_pointer, path_pointer, error_code
 	);
 }
+
+#if (HF_MEMORY_MAP_NEEDED == 1)
+
+int hf_file_map_initialize(
+		struct HF_File_Mapping * restrict out_mapping_pointer,
+		const char * restrict path_pointer
+	)
+{
+	if( assert_check_m( out_mapping_pointer != NULL,"No mapping storage found")== false ||
+		assert_check_m( path_pointer != NULL, "No filepath found" ) == false )
+		return RF_ERROR_NULL_PARAMETERS;
+
+	hf_file_map_reset( out_mapping_pointer );
+
+#	ifdef _WIN32
+	return hf_file_map_initialize_windows( out_mapping_pointer, path_pointer );
+#	else
+	return hf_file_map_initialize_posix( out_mapping_pointer, path_pointer );
+#	endif /* _WIN32 */
+}
+
+int hf_file_map_deinitialize( struct HF_File_Mapping * restrict mapping_pointer ) {
+	if( assert_check_m( mapping_pointer	!= NULL, "No mapping storage found"	) == false )
+		return RF_ERROR_NULL_PARAMETERS;
+
+	int error_code = RF_SUCCESS;
+
+#	ifdef _WIN32
+
+	if ( mapping_pointer->data_pointer != NULL
+		&& UnmapViewOfFile( mapping_pointer->data_pointer ) == 0 )
+	{
+		woem_push(
+			"(hf_file_initialize_map) unmap view of file failed (%lu)", GetLastError()
+		);
+		error_code = RF_ERROR_UNMAP;
+	}
+	if ( mapping_pointer->map != NULL && CloseHandle( mapping_pointer->map ) == 0 ) {
+		woem_push(
+			"(hf_file_initialize_map) closing file map failed (%lu)", GetLastError()
+		);
+		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
+	}
+	if ( mapping_pointer->file != INVALID_HANDLE_VALUE &&
+		CloseHandle( mapping_pointer->file ) == 0 )
+	{
+		woem_push( "(hf_file_initialize_map) closing file failed (%lu)", GetLastError() );
+		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
+	}
+
+#	else
+
+	if ( mapping_pointer->data_pointer != NULL
+		&& munmap( (void *) mapping_pointer->data_pointer, mapping_pointer->size ) != 0 )
+	{
+		woem_push("(hf_file_initialize_map) file unmapping failed (%s)", strerror(errno));
+		error_code = RF_ERROR_UNMAP;
+	}
+	if( mapping_pointer->file_descriptor >= 0
+		&& close( mapping_pointer->file_descriptor ) != 0 )
+	{
+		woem_push( "(hf_file_initialize_map) closing file failed (%s)", strerror(errno));
+		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
+	}
+
+#endif /* _WIN32 */
+
+	hf_file_map_reset( mapping_pointer );
+
+	return error_code;
+}
+
+static void hf_file_map_reset( struct HF_File_Mapping * restrict out_mapping_pointer ) {
+	*out_mapping_pointer = (struct HF_File_Mapping) {
+#	ifdef _WIN32
+		.file			= INVALID_HANDLE_VALUE
+#	else
+		.file_descriptor= -1
+#	endif /* _WIN32 */
+	};
+}
+
+#	ifdef _WIN32
+static int hf_file_map_initialize_windows(
+		struct HF_File_Mapping * restrict out_mapping_pointer,
+		const char * restrict path_pointer
+	)
+{
+	assert_m( path_pointer			!= NULL, "No path found"		);
+	assert_m( out_mapping_pointer	!= NULL, "No map storage found"	);
+
+	wchar_t wide_path_buffer[RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE] = RF_UNIVERSAL_PREFIX;
+	wchar_t * wide_path_buffer_pointer = wide_path_buffer + RF_UNIVERSAL_PREFIX_LENGTH;
+
+	int error_code = hf_resolve_path_windows(
+		path_pointer, wide_path_buffer, &wide_path_buffer_pointer
+	);
+	if ( error_code != RF_SUCCESS ) return error_code;
+
+	out_mapping_pointer->file = CreateFileW(
+		wide_path_buffer_pointer, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL, NULL
+	);
+	if ( out_mapping_pointer->file == INVALID_HANDLE_VALUE ) {
+		woem_push(
+			"(hf_file_initialize_map) file (%s) open failed (%lu)",
+			path_pointer, GetLastError()
+		);
+		return RF_ERROR_OPEN;
+	}
+
+	LARGE_INTEGER file_size;
+	if ( GetFileSizeEx( out_mapping_pointer->file, &file_size ) == 0 ) {
+		woem_push(
+			"(hf_file_initialize_map) file (%s) size failed (%lu)",
+			path_pointer, GetLastError()
+		);
+		error_code = RF_ERROR_ATTRIBUTES;
+		goto cleanup;
+	}
+
+	if ( file_size.QuadPart < 0 ) {
+		woem_push( "(hf_file_initialize_map) negative file (%s) size", path_pointer );
+		error_code = RF_ERROR_LARGE_SIZE;
+		goto cleanup;
+	}
+
+#	if SIZE_MAX < UINT_LEAST64_MAX
+	if ( (uint_least64_t) file_size.QuadPart > (uint_least64_t) SIZE_MAX ) {
+		woem_push("(hf_file_initialize_map) file (%s) exceed memory limits", path_pointer);
+		error_code = RF_ERROR_LARGE_SIZE;
+		goto cleanup;
+	}
+#	endif /* SIZE_MAX < UINT_LEAST64_MAX */
+	out_mapping_pointer->size = (size_t) file_size.QuadPart;
+
+	if ( out_mapping_pointer->size == 0 )
+		goto cleanup;
+
+	out_mapping_pointer->map = CreateFileMappingW(
+		out_mapping_pointer->file, NULL, PAGE_READONLY, 0, 0, NULL
+	);
+	if ( out_mapping_pointer->map == NULL ) {
+		woem_push(
+			"(hf_file_initialize_map) file (%s) map creation failed (%lu)",
+			path_pointer, GetLastError()
+		);
+		error_code = RF_ERROR_MAP;
+		goto cleanup;
+	}
+
+	out_mapping_pointer->data_pointer = (unsigned char * ) MapViewOfFile(
+		out_mapping_pointer->map, FILE_MAP_READ, 0, 0, 0
+	);
+	if ( out_mapping_pointer->data_pointer == NULL ) {
+		woem_push(
+			"(hf_file_initialize_map) file (%s) map creation failed (%lu)",
+			path_pointer, GetLastError()
+		);
+		error_code = RF_ERROR_MAP;
+		goto cleanup_map;
+	}
+	return error_code;
+
+cleanup_map:
+	if ( CloseHandle( out_mapping_pointer->map ) == 0 ) {
+		woem_push( "(hf_file_initialize_map) map closing failed (%lu)", GetLastError() );
+		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_UNMAP;
+	}
+	out_mapping_pointer->map = NULL;
+
+cleanup:
+	if ( CloseHandle( out_mapping_pointer->file ) == 0 ) {
+		woem_push( "(hf_file_initialize_map) file closing failed (%lu)", GetLastError() );
+		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
+	}
+	out_mapping_pointer->file = INVALID_HANDLE_VALUE;
+
+	return error_code;
+}
+
+#	else
+
+static int hf_file_map_initialize_posix(
+		struct HF_File_Mapping * restrict out_mapping_pointer,
+		const char * restrict path_pointer
+	)
+{
+	assert_m( path_pointer			!= NULL, "No path found"		);
+	assert_m( out_mapping_pointer	!= NULL, "No map storage found"	);
+	void * memory_mapped;
+	int error_code = RF_SUCCESS;
+
+	out_mapping_pointer->file_descriptor = open( path_pointer, O_RDONLY );
+	if ( out_mapping_pointer->file_descriptor < 0 ) {
+		woem_push(
+			"(hf_file_initialize_map) file (%s) open failed (%s)",
+			path_pointer, strerror(errno)
+		);
+		return RF_ERROR_OPEN;
+	}
+
+	struct stat file_status;
+	if ( fstat( out_mapping_pointer->file_descriptor, &file_status ) != 0 ) {
+		woem_push(
+			"(hf_file_initialize_map) getting file (%s) status failed (%s)",
+			path_pointer, strerror(errno)
+		);
+		error_code = RF_ERROR_NOT_A_FILE;
+		goto cleanup;
+	}
+
+	if ( S_ISREG( file_status.st_mode ) == 0 ) {
+		woem_push( "(hf_file_initialize_map) (%s) isn't a regular file", path_pointer );
+		error_code = RF_ERROR_NOT_A_FILE;
+		goto cleanup;
+	}
+
+	if ( file_status.st_size < 0 ) {
+		woem_push( "(hf_file_initialize_map) negative file (%s) size", path_pointer );
+		error_code = RF_ERROR_STAT;
+		goto cleanup;
+	}
+
+#	if SIZE_MAX < UINT_LEAST64_MAX
+	if ( (uint_least64_t) file_status.st_size > (uint_least64_t) SIZE_MAX ) {
+		woem_push("(hf_file_initialize_map) file (%s) exceed memory limits", path_pointer);
+		error_code = RF_ERROR_LARGE_SIZE;
+		goto cleanup;
+	}
+#	endif /* SIZE_MAX < UINT_LEAST64_MAX */
+	out_mapping_pointer->size = (size_t) file_status.st_size;
+
+	if ( out_mapping_pointer->size == 0 ) {
+		error_code = RF_SUCCESS;
+		goto cleanup;
+	}
+
+	memory_mapped = mmap(
+		NULL, out_mapping_pointer->size, PROT_READ, MAP_PRIVATE,
+		out_mapping_pointer->file_descriptor, 0
+	);
+	if ( memory_mapped == MAP_FAILED ) {
+		woem_push(
+			"(hf_file_initialize_map) file (%s) map failed (%s)",
+			path_pointer, strerror(errno)
+		);
+		error_code = RF_ERROR_MAP;
+		goto cleanup;
+	}
+
+	out_mapping_pointer->data_pointer = (unsigned char *) memory_mapped;
+
+	return error_code;
+
+cleanup:
+	if ( close( out_mapping_pointer->file_descriptor ) != 0 ) {
+		woem_push( "(hf_file_initialize_map) closing file failed (%s)", strerror(errno) );
+		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
+	}
+	out_mapping_pointer->file_descriptor = -1;
+	return error_code;
+}
+#	endif /* _WIN32 */
+
+#endif /* HF_MEMORY_MAP_NEEDED == 1 */
 
 #if defined(RF_BACKEND_FSEEKO) || defined(RF_BACKEND_STANDARD)
 /* Function:
@@ -1102,8 +1421,6 @@ static int hf_resolve_path_windows(
 	*out_wide_path_pointer = wide_path_buffer_pointer;
 	return RF_SUCCESS;
 }
-#endif /* RF_BACKEND_WINDOWS */
-
 /* Function:
  * check if path has a universal naming convention prefix
  *
@@ -1136,6 +1453,7 @@ static bool hf_path_has_wide_prefix( const wchar_t path_array[static 4] ) {
 			(path_array[2] == L'?' || path_array[2] == L'.')
 	);
 }
+#endif /* RF_BACKEND_WINDOWS */
 
 /* Function:
  * get file size and optionally open its handle
