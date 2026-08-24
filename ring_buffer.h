@@ -84,7 +84,7 @@ void * rb_ring_buffer_peek_position( const struct RB_Ring_Buffer * restrict ring
  *
  * Parameters:
  * ring_buffer_pointer	- ring buffer pointer
- * data_pointer			- pointer to the data to push
+ * data_pointer			- pointer to the data to push; shall NOT point into the ring buffer storage
  *
  * Returns:
  * true					- element pushed successfully
