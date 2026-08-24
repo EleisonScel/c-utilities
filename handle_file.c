@@ -127,6 +127,7 @@ static_assert_m(
 #	define RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE\
 		(RF_WIDE_PATH_BUFFER_MAXIMAL_SIZE + RF_UNIVERSAL_PREFIX_LENGTH)
 #else
+#	include <unistd.h>
 #	define RF_TEMPORARY_COPY_BUFFER_SIZE (64 * 1024) /* 64kb */
 #	if defined(RF_BACKEND_STANDARD)
 #		include <limits.h>	/* LONG_MAX	*/
@@ -146,6 +147,7 @@ static_assert_m(
 #	endif
 #	if defined(RF_BACKEND_STAT) || defined(RF_BACKEND_FSEEKO)
 #		include <sys/types.h>	/* off_t*/
+#		include <fcntl.h>		/* open*/
 #	endif
 #	if defined(RF_BACKEND_STAT)
 #		include <sys/stat.h>	/* stat	*/
@@ -155,9 +157,7 @@ static_assert_m(
 #if (HF_MEMORY_MAP_NEEDED == 1)
 
 #	ifndef _WIN32
-#		ifndef RF_BACKEND_STAT
-#			include <sys/stat.h>/* fstat*/
-#		endif
+#		include <sys/stat.h>/* fstat*/
 #		include <sys/mman.h>/* mmap */
 #		include <fcntl.h>	/* open */
 #		include <unistd.h>	/* close*/
@@ -165,32 +165,44 @@ static_assert_m(
 	sizeof(off_t) <= sizeof(uint_least64_t),
 	"program can't handle file size check on preprocessor level"
 );
-static int hf_file_map_initialize_posix( struct HF_File_Mapping * restrict out_mapping_pointer, const char * restrict path_pointer );
+static int hf_file_map_initialize_posix(struct HF_File_Mapping * restrict out_mapping_pointer, const char * restrict path_pointer);
 #	else
 static_assert_m(
 	sizeof(LONGLONG) <= sizeof(uint_least64_t),
 	"program can't handle file size check on preprocessor level"
 );
-static int hf_file_map_initialize_windows( struct HF_File_Mapping * restrict out_mapping_pointer, const char * restrict path_pointer );
+static int hf_file_map_initialize_windows(struct HF_File_Mapping * restrict out_mapping_pointer, const char * restrict path_pointer);
 #	endif /* _WIN32 */
 
-static void hf_file_map_reset( struct HF_File_Mapping * restrict out_mapping_pointer );
+static void hf_file_map_reset(struct HF_File_Mapping * restrict out_mapping_pointer);
 
 #endif /* HF_MEMORY_MAP_NEEDED == 1 */
 
-static int hf_file_seek( const char * restrict function_name_pointer, FILE * restrict file_pointer, const char * restrict path_pointer, uint_least64_t position_to_read_from );
-static int hf_file_open( const char * restrict file_path_pointer, const char * restrict mode_pointer, FILE * restrict * restrict out_file_pointer );
-static int hf_file_open_for_read( const char * restrict path_pointer, FILE * restrict * restrict out_file_pointer, size_t * restrict out_file_size_pointer );
-static int hf_file_copy_internal( const char * restrict function_name_pointer, const char * restrict path_pointer_source, const char * restrict path_pointer_destination );
-static int hf_file_close_internal( const char * restrict function_name_pointer, FILE * file_pointer, const char * restrict file_path_pointer, int error_code_current );
-static int hf_file_write_internal( const char * restrict file_path_pointer, const char * restrict data_pointer, size_t length, const char * restrict mode_pointer, const char * restrict function_name_pointer );
-static int hf_file_get_information( const char * restrict function_name_pointer, const char * restrict path_pointer, uint_least64_t * restrict out_file_size_pointer, FILE * restrict * restrict out_file_pointer );
+static int hf_file_seek(const char * restrict function_name_pointer, FILE * restrict file_pointer, const char * restrict path_pointer, uint_least64_t position_to_read_from);
+static int hf_file_open(const char * restrict file_path_pointer, const char * restrict mode_pointer, FILE * restrict * restrict out_file_pointer);
+static int hf_file_heap_truncate(FILE * restrict file_pointer, char * restrict * restrict out_text_pointer, const char * restrict path_pointer, const size_t total_read_bytes);
+static int hf_file_open_for_read(const char * restrict path_pointer, FILE * restrict * restrict out_file_pointer, size_t * restrict out_file_size_pointer);
+static int hf_file_copy_internal(const char * restrict function_name_pointer, const char * restrict path_pointer_source, const char * restrict path_pointer_destination);
+static int hf_file_close_internal(const char * restrict function_name_pointer, FILE * file_pointer, const char * restrict file_path_pointer, int error_code_current);
+static int hf_file_write_internal(const char * restrict file_path_pointer, const char * restrict data_pointer, size_t length, const char * restrict mode_pointer, const char * restrict function_name_pointer);
+static int hf_file_get_information(const char * restrict function_name_pointer, const char * restrict path_pointer, uint_least64_t * restrict out_file_size_pointer, FILE * restrict * restrict out_file_pointer);
 #ifdef RF_BACKEND_WINDOWS
-static int hf_resolve_path_windows( const char * restrict path_pointer, wchar_t * restrict wide_path_pointer, wchar_t * restrict * restrict out_wide_path_pointer );
-static bool hf_path_has_wide_prefix( const wchar_t path_array[static 4] );
-static bool hf_path_has_universal_naming_convention_prefix( const wchar_t path_array[static 2] );
-#elif defined(RF_BACKEND_FSEEKO) || defined(RF_BACKEND_STANDARD)
-static int hf_file_seek_get_size( const char * restrict function_name_pointer, FILE * restrict file_pointer, const char * restrict file_path_pointer, uint_least64_t * restrict out_file_size_pointer, bool needed_rewind );
+static int hf_file_copy_windows(const char * restrict function_name_pointer, const char * restrict path_pointer_source,const char * restrict path_pointer_destination);
+static int hf_resolve_path_windows(const char * restrict path_pointer, wchar_t * restrict wide_path_pointer, wchar_t * restrict * restrict out_wide_path_pointer);
+static bool hf_path_has_wide_prefix(const wchar_t path_array[static 4]);
+static bool hf_path_has_universal_naming_convention_prefix(const wchar_t path_array[static 2]);
+#else
+static bool hf_is_files_same(const char * restrict path_pointer_first, const char * restrict path_pointer_second);
+static int hf_file_copy_posix(const char * restrict function_name_pointer, const char * restrict path_pointer_source,const char * restrict path_pointer_destination);
+#	if defined(RF_BACKEND_STAT) || defined(RF_BACKEND_FSEEKO) 
+static int hf_file_open_stat_seek(const char * restrict file_path_pointer, const char * restrict mode_pointer,FILE * restrict * restrict out_file_pointer);
+#	endif
+#	if defined(RF_BACKEND_FSEEKO) || defined(RF_BACKEND_STANDARD)
+static int hf_file_get_size_seek(const char * restrict function_name_pointer, FILE * restrict file_pointer, const char * restrict file_path_pointer, uint_least64_t * restrict out_file_size_pointer, bool needed_rewind);
+#	endif
+#	if defined(RF_BACKEND_STAT)
+static int hf_file_get_size_status(const char * restrict function_name_pointer, const char * restrict path_pointer, const struct stat * restrict file_status_pointer, uint_least64_t * restrict out_file_size_pointer);
+#	endif
 #endif /* RF_BACKEND_WINDOWS */
 
 int hf_file_read(
@@ -226,38 +238,15 @@ int hf_file_read(
 	total_read_bytes = fread( text_pointer, 1, file_size, file_pointer );
 
 	if ( total_read_bytes != file_size ) {
-		char * temporary_pointer = NULL;
-		if ( ferror( file_pointer ) != 0 ) {
-			woem_push(
-				"(hf_file_read) I/O error while reading (%s) file (%s)",
-				path_pointer, strerror(errno)
-			);
-			error_code = RF_ERROR_READ;
+		error_code = hf_file_heap_truncate(
+			file_pointer, &text_pointer, path_pointer, total_read_bytes
+		);
+		if ( error_code != RF_SUCCESS )
 			goto cleanup;
-		}
-		if ( feof( file_pointer ) == 0 ) {
-			woem_push(
-				"(hf_file_read) reading stopped prematurely without EOF or I/O error file (%s)",
-				path_pointer
-			);
-			error_code = RF_ERROR_READ;
-			goto cleanup;
-		}
-		if ( total_read_bytes == 0 && file_size > 0 ) {
-			woem_push(
-				"(hf_file_read) now empty file (%s) expected with %zu bytes",
-				path_pointer, file_size
-			);
-			error_code = RF_ERROR_READ;
-			goto cleanup;
-		}
-		temporary_pointer = realloc( text_pointer, total_read_bytes + 1 );
-		if ( temporary_pointer != NULL )
-			text_pointer = temporary_pointer;
 	}
-
-	text_pointer[total_read_bytes] = '\0';
-
+	
+	if ( text_pointer != NULL )
+		text_pointer[total_read_bytes] = '\0';
 	if ( length_pointer != NULL )
 		*length_pointer = total_read_bytes;
 	*out_data_pointer = text_pointer;
@@ -276,6 +265,37 @@ cleanup:
 	);
 
 	return error_code;
+}
+
+static int hf_file_heap_truncate(
+		FILE * restrict file_pointer, char * restrict * restrict out_text_pointer,
+		const char * restrict path_pointer, const size_t total_read_bytes 
+	)
+{
+	if ( ferror( file_pointer ) != 0 ) {
+		woem_push(
+			"(hf_file_read) I/O error while reading (%s) file (%s)",
+			path_pointer, strerror(errno)
+		);
+		return RF_ERROR_READ;
+	}
+	if ( feof( file_pointer ) == 0 ) {
+		woem_push(
+			"(hf_file_read) reading stopped prematurely without EOF or I/O error file (%s)",
+			path_pointer
+		);
+		return RF_ERROR_READ;
+	}
+	if ( total_read_bytes == 0 ) {
+		free( *out_text_pointer );
+		*out_text_pointer = NULL;
+	} else {
+		char * temporary_pointer = NULL;
+		temporary_pointer = realloc( *out_text_pointer, total_read_bytes + 1 );
+		if ( temporary_pointer != NULL )
+			*out_text_pointer = temporary_pointer;
+	}
+	return RF_SUCCESS;
 }
 
 int hf_file_write(
@@ -323,7 +343,7 @@ int hf_file_delete( const char * restrict path_pointer ) {
 
 #else
 
-	if ( remove( path_pointer ) != 0 ) {
+	if ( unlink( path_pointer ) != 0 ) {
 		woem_push(
 			"(hf_file_delete) failed to delete file (%s) (%s)", path_pointer, strerror(errno)
 		);
@@ -386,7 +406,7 @@ int hf_file_rename_move(
 			if ( error_safed_operation != RF_SUCCESS )
 				return error_safed_operation;
 
-			if ( remove( path_pointer_old ) != 0 ) {
+			if ( unlink( path_pointer_old ) != 0 ) {
 				woem_push(
 					"(hf_file_rename_move) file (%s) failed to delete after copying (%s)",
 					path_pointer_old, strerror(errno)
@@ -605,20 +625,20 @@ int hf_file_map_deinitialize( struct HF_File_Mapping * restrict mapping_pointer 
 		&& UnmapViewOfFile( mapping_pointer->data_pointer ) == 0 )
 	{
 		woem_push(
-			"(hf_file_initialize_map) unmap view of file failed (%lu)", GetLastError()
+			"(hf_file_map_deinitialize) unmap view of file failed (%lu)", GetLastError()
 		);
 		error_code = RF_ERROR_UNMAP;
 	}
 	if ( mapping_pointer->map != NULL && CloseHandle( mapping_pointer->map ) == 0 ) {
 		woem_push(
-			"(hf_file_initialize_map) closing file map failed (%lu)", GetLastError()
+			"(hf_file_map_deinitialize) closing file map failed (%lu)", GetLastError()
 		);
 		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
 	}
 	if ( mapping_pointer->file != INVALID_HANDLE_VALUE &&
 		CloseHandle( mapping_pointer->file ) == 0 )
 	{
-		woem_push( "(hf_file_initialize_map) closing file failed (%lu)", GetLastError() );
+		woem_push( "(hf_file_map_deinitialize) closing file failed (%lu)", GetLastError() );
 		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
 	}
 
@@ -627,13 +647,13 @@ int hf_file_map_deinitialize( struct HF_File_Mapping * restrict mapping_pointer 
 	if ( mapping_pointer->data_pointer != NULL
 		&& munmap( (void *) mapping_pointer->data_pointer, mapping_pointer->size ) != 0 )
 	{
-		woem_push("(hf_file_initialize_map) file unmapping failed (%s)", strerror(errno));
+		woem_push("(hf_file_map_deinitialize) file unmapping failed (%s)", strerror(errno));
 		error_code = RF_ERROR_UNMAP;
 	}
 	if( mapping_pointer->file_descriptor >= 0
 		&& close( mapping_pointer->file_descriptor ) != 0 )
 	{
-		woem_push( "(hf_file_initialize_map) closing file failed (%s)", strerror(errno));
+		woem_push( "(hf_file_map_deinitialize) closing file failed (%s)", strerror(errno));
 		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
 	}
 
@@ -677,14 +697,14 @@ static int hf_file_map_initialize_windows(
 	);
 	if ( out_mapping_pointer->file == INVALID_HANDLE_VALUE ) {
 		woem_push(
-			"(hf_file_initialize_map) file (%s) open failed (%lu)",
+			"(hf_file_map_initialize) file (%s) open failed (%lu)",
 			path_pointer, GetLastError()
 		);
 		return RF_ERROR_OPEN;
 	}
 
 	if ( GetFileType( out_mapping_pointer->file ) != FILE_TYPE_DISK ) {
-		woem_push( "(hf_file_initialize_map) (%s) isn't a regular file", path_pointer );
+		woem_push( "(hf_file_map_initialize) (%s) isn't a regular file", path_pointer );
 		error_code = RF_ERROR_NOT_A_FILE;
 		goto cleanup;
 	}
@@ -692,7 +712,7 @@ static int hf_file_map_initialize_windows(
 	LARGE_INTEGER file_size;
 	if ( GetFileSizeEx( out_mapping_pointer->file, &file_size ) == 0 ) {
 		woem_push(
-			"(hf_file_initialize_map) file (%s) size failed (%lu)",
+			"(hf_file_map_initialize) file (%s) size failed (%lu)",
 			path_pointer, GetLastError()
 		);
 		error_code = RF_ERROR_ATTRIBUTES;
@@ -700,19 +720,17 @@ static int hf_file_map_initialize_windows(
 	}
 
 	if ( file_size.QuadPart < 0 ) {
-		woem_push( "(hf_file_initialize_map) negative file (%s) size", path_pointer );
+		woem_push( "(hf_file_map_initialize) negative file (%s) size", path_pointer );
 		error_code = RF_ERROR_LARGE_SIZE;
 		goto cleanup;
 	}
 
-#	if SIZE_MAX < UINT_LEAST64_MAX
-	if ( (uint_least64_t) file_size.QuadPart > (uint_least64_t) SIZE_MAX ) {
-		woem_push("(hf_file_initialize_map) file (%s) exceed memory limits", path_pointer);
+	out_mapping_pointer->size = (size_t) file_size.QuadPart;
+	if ( file_size.QuadPart > (LONGLONG) out_mapping_pointer->size ) {
+		woem_push("(hf_file_map_initialize) file (%s) exceed memory limits", path_pointer);
 		error_code = RF_ERROR_LARGE_SIZE;
 		goto cleanup;
 	}
-#	endif /* SIZE_MAX < UINT_LEAST64_MAX */
-	out_mapping_pointer->size = (size_t) file_size.QuadPart;
 
 	if ( out_mapping_pointer->size == 0 )
 		goto cleanup;
@@ -722,7 +740,7 @@ static int hf_file_map_initialize_windows(
 	);
 	if ( out_mapping_pointer->map == NULL ) {
 		woem_push(
-			"(hf_file_initialize_map) file (%s) map creation failed (%lu)",
+			"(hf_file_map_initialize) file (%s) map creation failed (%lu)",
 			path_pointer, GetLastError()
 		);
 		error_code = RF_ERROR_MAP;
@@ -734,7 +752,7 @@ static int hf_file_map_initialize_windows(
 	);
 	if ( out_mapping_pointer->data_pointer == NULL ) {
 		woem_push(
-			"(hf_file_initialize_map) file (%s) map creation failed (%lu)",
+			"(hf_file_map_initialize) file (%s) map creation failed (%lu)",
 			path_pointer, GetLastError()
 		);
 		error_code = RF_ERROR_MAP;
@@ -744,14 +762,14 @@ static int hf_file_map_initialize_windows(
 
 cleanup_map:
 	if ( CloseHandle( out_mapping_pointer->map ) == 0 ) {
-		woem_push( "(hf_file_initialize_map) map closing failed (%lu)", GetLastError() );
+		woem_push( "(hf_file_map_initialize) map closing failed (%lu)", GetLastError() );
 		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_UNMAP;
 	}
 	out_mapping_pointer->map = NULL;
 
 cleanup:
 	if ( CloseHandle( out_mapping_pointer->file ) == 0 ) {
-		woem_push( "(hf_file_initialize_map) file closing failed (%lu)", GetLastError() );
+		woem_push( "(hf_file_map_initialize) file closing failed (%lu)", GetLastError() );
 		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
 	}
 	out_mapping_pointer->file = INVALID_HANDLE_VALUE;
@@ -771,10 +789,10 @@ static int hf_file_map_initialize_posix(
 	void * memory_mapped;
 	int error_code = RF_SUCCESS;
 
-	out_mapping_pointer->file_descriptor = open( path_pointer, O_RDONLY );
+	out_mapping_pointer->file_descriptor = open( path_pointer, O_RDONLY | O_NONBLOCK );
 	if ( out_mapping_pointer->file_descriptor < 0 ) {
 		woem_push(
-			"(hf_file_initialize_map) file (%s) open failed (%s)",
+			"(hf_file_map_initialize) file (%s) open failed (%s)",
 			path_pointer, strerror(errno)
 		);
 		return RF_ERROR_OPEN;
@@ -783,33 +801,31 @@ static int hf_file_map_initialize_posix(
 	struct stat file_status;
 	if ( fstat( out_mapping_pointer->file_descriptor, &file_status ) != 0 ) {
 		woem_push(
-			"(hf_file_initialize_map) getting file (%s) status failed (%s)",
+			"(hf_file_map_initialize) getting file (%s) status failed (%s)",
 			path_pointer, strerror(errno)
 		);
-		error_code = RF_ERROR_NOT_A_FILE;
+		error_code = RF_ERROR_STAT;
 		goto cleanup;
 	}
 
 	if ( S_ISREG( file_status.st_mode ) == 0 ) {
-		woem_push( "(hf_file_initialize_map) (%s) isn't a regular file", path_pointer );
+		woem_push( "(hf_file_map_initialize) (%s) isn't a regular file", path_pointer );
 		error_code = RF_ERROR_NOT_A_FILE;
 		goto cleanup;
 	}
 
 	if ( file_status.st_size < 0 ) {
-		woem_push( "(hf_file_initialize_map) negative file (%s) size", path_pointer );
+		woem_push( "(hf_file_map_initialize) negative file (%s) size", path_pointer );
 		error_code = RF_ERROR_STAT;
 		goto cleanup;
 	}
 
-#	if SIZE_MAX < UINT_LEAST64_MAX
-	if ( (uint_least64_t) file_status.st_size > (uint_least64_t) SIZE_MAX ) {
-		woem_push("(hf_file_initialize_map) file (%s) exceed memory limits", path_pointer);
+	out_mapping_pointer->size = (size_t) file_status.st_size;
+	if ( file_status.st_size != (off_t) out_mapping_pointer->size ) {
+		woem_push("(hf_file_map_initialize) file (%s) exceed memory limits", path_pointer);
 		error_code = RF_ERROR_LARGE_SIZE;
 		goto cleanup;
 	}
-#	endif /* SIZE_MAX < UINT_LEAST64_MAX */
-	out_mapping_pointer->size = (size_t) file_status.st_size;
 
 	if ( out_mapping_pointer->size == 0 ) {
 		error_code = RF_SUCCESS;
@@ -822,7 +838,7 @@ static int hf_file_map_initialize_posix(
 	);
 	if ( memory_mapped == MAP_FAILED ) {
 		woem_push(
-			"(hf_file_initialize_map) file (%s) map failed (%s)",
+			"(hf_file_map_initialize) file (%s) map failed (%s)",
 			path_pointer, strerror(errno)
 		);
 		error_code = RF_ERROR_MAP;
@@ -835,7 +851,10 @@ static int hf_file_map_initialize_posix(
 
 cleanup:
 	if ( close( out_mapping_pointer->file_descriptor ) != 0 ) {
-		woem_push( "(hf_file_initialize_map) closing file failed (%s)", strerror(errno) );
+		woem_push(
+			"(hf_file_map_initialize) closing file (%s) failed (%s)",
+			path_pointer, strerror(errno)
+		);
 		if ( error_code == RF_SUCCESS ) error_code = RF_ERROR_CLOSE;
 	}
 	out_mapping_pointer->file_descriptor = -1;
@@ -860,7 +879,7 @@ cleanup:
  * 0					- file size retrieved successfully
  * >0					- seek, extra large size, getting position failed
  */
-static int hf_file_seek_get_size(
+static int hf_file_get_size_seek(
 		const char * restrict function_name_pointer, FILE * restrict file_pointer,
 		const char * restrict file_path_pointer,
 		uint_least64_t * restrict out_file_size_pointer, bool needed_rewind
@@ -943,6 +962,45 @@ static int hf_file_seek_get_size(
 }
 #endif /* RF_BACKEND_FSEEKO || RF_BACKEND_STANDARD */
 
+#if defined(RF_BACKEND_STAT)
+/* Function:
+ * validate a file status and extract its size
+ *
+ * Parameters:
+ * function_name_pointer- name of calling function
+ * path_pointer			- path to file for errors
+ * file_status_pointer	- file status to validate
+ * out_file_size_pointer- pointer to store file size
+ *
+ * Returns:
+ * 0					- size retrieved
+ * > 0					- not a file, negative or unrepresentable size
+ */
+static int hf_file_get_size_status(
+		const char * restrict function_name_pointer, const char * restrict path_pointer,
+		const struct stat * restrict file_status_pointer,
+		uint_least64_t * restrict out_file_size_pointer
+	)
+{
+	if ( S_ISREG( file_status_pointer->st_mode ) == 0 ) {
+		woem_push( "(%s) (%s) isn't a regular file", function_name_pointer, path_pointer );
+		return RF_ERROR_NOT_A_FILE;
+	}
+
+	if ( file_status_pointer->st_size < 0 ) {
+		woem_push( "(%s) negative file (%s) size", function_name_pointer, path_pointer );
+		return RF_ERROR_STAT;
+	}
+
+	*out_file_size_pointer = (uint_least64_t) file_status_pointer->st_size;
+	if ( (off_t) *out_file_size_pointer != file_status_pointer->st_size ) {
+		woem_push( "(%s) file size exceed memory limits", function_name_pointer );
+		return RF_ERROR_LARGE_SIZE;
+	}
+	return RF_SUCCESS;
+}
+#endif /* RF_BACKEND_STAT */
+
 /* Function:
  * close a file and handle error
  *
@@ -1003,6 +1061,25 @@ static int hf_file_copy_internal(
 
 #ifdef RF_BACKEND_WINDOWS
 
+	return hf_file_copy_windows(
+		function_name_pointer, path_pointer_source, path_pointer_destination
+	);
+
+#else
+
+	return hf_file_copy_posix(
+		function_name_pointer, path_pointer_source, path_pointer_destination
+	);
+
+#endif /* RF_BACKEND_WINDOWS */
+}
+
+#ifdef RF_BACKEND_WINDOWS
+static int hf_file_copy_windows(
+		const char * restrict function_name_pointer, const char * restrict path_pointer_source,
+		const char * restrict path_pointer_destination
+	)
+{
 	wchar_t wide_path_buffer_source[RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE] = RF_UNIVERSAL_PREFIX;
 	wchar_t *wide_path_buffer_pointer_source =
 		wide_path_buffer_source + RF_UNIVERSAL_PREFIX_LENGTH;
@@ -1033,30 +1110,32 @@ static int hf_file_copy_internal(
 		return RF_ERROR_COPY;
 	}
 
+	return RF_SUCCESS;
+}
 #else
+static int hf_file_copy_posix(
+		const char * restrict function_name_pointer, const char * restrict path_pointer_source,
+		const char * restrict path_pointer_destination
+	)
+{
 
-	FILE * file_pointer_source = fopen( path_pointer_source, "rb" );
-	if ( file_pointer_source == NULL ) {
-		woem_push(
-			"(%s) failed to open (%s) to copy (%s)",
-			function_name_pointer, path_pointer_source, strerror(errno)
-		);
-		return RF_ERROR_OPEN;
-	}
+	if ( hf_is_files_same( path_pointer_source, path_pointer_destination ) == true )
+		return RF_ERROR_COPY;
 
-	FILE * file_pointer_destination = fopen( path_pointer_destination, "wb" );
-	if ( file_pointer_destination == NULL ) {
-		woem_push(
-			"(%s) failed to open (%s) to copy (%s)",
-			function_name_pointer, path_pointer_destination, strerror(errno)
-		);
-		if ( fclose( file_pointer_source ) != 0) {
+	FILE * file_pointer_source = NULL;
+	int error_code = hf_file_open( path_pointer_source, "rb", &file_pointer_source );
+	if( error_code != RF_SUCCESS )
+		return error_code;
+
+	FILE * file_pointer_destination = NULL;
+	error_code = hf_file_open( path_pointer_destination, "wb", &file_pointer_destination );
+	if ( error_code != RF_SUCCESS ) {
+		if( fclose( file_pointer_source ) != 0 )
 			woem_push(
 				"(%s) source file (%s) failed to close (%s)",
 				function_name_pointer, path_pointer_source, strerror(errno)
 			);
-		}
-		return RF_ERROR_OPEN;
+		return error_code;
 	}
 
 	char file_buffer[RF_TEMPORARY_COPY_BUFFER_SIZE];
@@ -1097,7 +1176,7 @@ static int hf_file_copy_internal(
 	);
 
 	if ( error_safed_operation != RF_SUCCESS ) {
-		if ( remove( path_pointer_destination ) != 0 ) {
+		if ( unlink( path_pointer_destination ) != 0 ) {
 			woem_push(
 				"(%s) failed to delete file (%s) (%s)",
 				function_name_pointer, path_pointer_destination, strerror(errno)
@@ -1106,10 +1185,9 @@ static int hf_file_copy_internal(
 		return error_safed_operation;
 	}
 
-#endif /* RF_BACKEND_WINDOWS */
-
 	return RF_SUCCESS;
 }
+#endif /* !RF_BACKEND_WINDOWS */
 
 /* Function:
  * seek to a specific position in a file
@@ -1207,7 +1285,6 @@ static int hf_file_write_internal(
 	assert_m( mode_pointer			!= NULL, "No open mode found"			);
 
 	FILE * file_pointer = NULL;
-
 	int error_code = hf_file_open( file_path_pointer, mode_pointer, &file_pointer );
 	if( error_code != RF_SUCCESS )
 		return error_code;
@@ -1249,8 +1326,6 @@ static int hf_file_open(
 	assert_m( mode_pointer		!= NULL, "No open mode found"			);
 	assert_m( out_file_pointer	!= NULL, "No place to save file found"	);
 
-	*out_file_pointer = NULL;
-
 #ifdef RF_BACKEND_WINDOWS
 	
 	wchar_t wide_path_buffer[RF_UNIVERSAL_WIDE_PATH_BUFFER_SIZE] = RF_UNIVERSAL_PREFIX;
@@ -1266,6 +1341,10 @@ static int hf_file_open(
 		wide_mode_array[position] = (wchar_t)mode_pointer[position];
 
 	*out_file_pointer = _wfopen( wide_path_buffer_pointer, wide_mode_array );
+
+#elif defined(RF_BACKEND_STAT) || defined(RF_BACKEND_FSEEKO)
+
+	return hf_file_open_stat_seek( file_path_pointer, mode_pointer, out_file_pointer );
 
 #else
 
@@ -1283,6 +1362,48 @@ static int hf_file_open(
 
 	return RF_SUCCESS;
 }
+
+#if defined(RF_BACKEND_STAT) || defined(RF_BACKEND_FSEEKO)
+static int hf_file_open_stat_seek(
+		const char * restrict file_path_pointer, const char * restrict mode_pointer,
+		FILE * restrict * restrict out_file_pointer
+	)
+{
+	int flags_to_open = -1;
+	if ( *mode_pointer == 'w' )
+		flags_to_open = O_WRONLY | O_CREAT | O_TRUNC;
+	else if ( *mode_pointer == 'a' )
+		flags_to_open = O_WRONLY | O_CREAT | O_APPEND;
+	else if ( *(mode_pointer + 1) == '+' )
+		flags_to_open = O_RDWR;
+	else if ( *(mode_pointer + 1) == 'b' )
+		flags_to_open = O_RDONLY;
+
+	assert_m( flags_to_open != -1, "incorrect opening mode received" );
+
+	int file_descriptor = open( file_path_pointer, flags_to_open | O_NONBLOCK, 0666 );
+	if( file_descriptor < 0 ) {
+		woem_push(
+			"(hf_file_open) opening file (%s) failed (%s)", file_path_pointer, strerror(errno)
+		);
+		return RF_ERROR_OPEN;
+	}
+	*out_file_pointer = fdopen( file_descriptor, mode_pointer );
+	if ( *out_file_pointer == NULL ) {
+		woem_push(
+			"(hf_file_open) opening file (%s) failed (%s)", file_path_pointer, strerror(errno)
+		);
+		if( close( file_descriptor ) != 0 )
+			woem_push(
+				"(hf_file_open) closing file (%s) failed (%s)",
+				file_path_pointer, strerror(errno)
+			);
+		return RF_ERROR_OPEN;
+	}
+
+	return RF_SUCCESS;
+}
+#endif /* RF_BACKEND_STAT || RF_BACKEND_FSEEKO */
 
 /* Function:
  * open a file for reading and retrieve its size
@@ -1315,9 +1436,8 @@ static int hf_file_open_for_read(
 	);
 	if ( error_code != RF_SUCCESS ) return error_code;
 
-#	if SIZE_MAX <= UINT_LEAST64_MAX
-
-	if ( file_size_temporary > (uint_least64_t) (SIZE_MAX - 1) ) {
+	size_t file_size = (size_t) file_size_temporary;
+	if ( file_size_temporary != (uint_least64_t) file_size || file_size == SIZE_MAX ) {
 		woem_push("(hf_file_open_for_read) file (%s) size exceed memory limits", path_pointer);
 		if ( fclose(*out_file_pointer) != 0 ) {
 			woem_push(
@@ -1329,9 +1449,7 @@ static int hf_file_open_for_read(
 		return RF_ERROR_LARGE_SIZE;
 	}
 
-#	endif
-
-	*out_file_size_pointer = (size_t) file_size_temporary;
+	*out_file_size_pointer = file_size;
 
 	return RF_SUCCESS;
 }
@@ -1564,31 +1682,57 @@ static int hf_file_get_information(
 		return RF_ERROR_STAT;
 	}
 
-	if ( S_ISREG( file_status.st_mode ) == 0 ) {
-		woem_push( "(%s) (%s) isn't a regular file", function_name_pointer, path_pointer );
-		return RF_ERROR_NOT_A_FILE;
+	int error_code = hf_file_get_size_status(
+		function_name_pointer, path_pointer, &file_status, out_file_size_pointer
+	);
+	if( error_code != RF_SUCCESS )
+		return error_code;
+
+	if ( out_file_pointer == NULL )
+		return RF_SUCCESS;
+
+	int file_descriptor = open( path_pointer, O_RDONLY | O_NONBLOCK );
+	if ( file_descriptor < 0 ) {
+		woem_push(
+			"(%s) file (%s) failed to open (%s)",
+			function_name_pointer, path_pointer, strerror(errno)
+		);
+		return RF_ERROR_OPEN;
 	}
 
-	if ( file_status.st_size < 0 ) {
-		woem_push( "(%s) negative file (%s) size", function_name_pointer, path_pointer );
+	if( fstat( file_descriptor, &file_status ) != 0 ) {
+		woem_push(
+			"(%s) getting file (%s) status failed (%s)",
+			function_name_pointer, path_pointer, strerror(errno)
+		);
+		if( close( file_descriptor ) != 0 )
+			woem_push("(%s) closing file failed (%s)", function_name_pointer, strerror(errno));
 		return RF_ERROR_STAT;
 	}
 
-	*out_file_size_pointer = (uint_least64_t) file_status.st_size;
-	if ( (off_t) *out_file_size_pointer != file_status.st_size ) {
-		woem_push( "(%s) file size exceed memory limits", function_name_pointer );
-		return RF_ERROR_LARGE_SIZE;
+	error_code = hf_file_get_size_status(
+		function_name_pointer, path_pointer, &file_status, out_file_size_pointer
+	);
+	if ( error_code != RF_SUCCESS ) {
+		if( close( file_descriptor ) != 0 )
+			woem_push(
+				"(%s) closing file failed (%s)", function_name_pointer, strerror(errno)
+			);
+		return error_code;
 	}
 
-	if ( out_file_pointer != NULL ) {
-		*out_file_pointer = fopen( path_pointer, "rb" );
-		if ( *out_file_pointer == NULL ) {
+	*out_file_pointer = fdopen( file_descriptor, "rb" );
+	if ( *out_file_pointer == NULL ) {
+		woem_push(
+			"(%s) creating read stream for file (%s) failed (%s)",
+			function_name_pointer, path_pointer, strerror(errno)
+		);
+		if( close( file_descriptor ) != 0 )
 			woem_push(
-				"(%s) file (%s) failed to open (%s)",
+				"(%s) closing file (%s) failed (%s)",
 				function_name_pointer, path_pointer, strerror(errno)
 			);
-			return RF_ERROR_OPEN;
-		}
+		return RF_ERROR_OPEN;
 	}
 
 #else
@@ -1602,7 +1746,7 @@ static int hf_file_get_information(
 		return RF_ERROR_OPEN;
 	}
 
-	int error_code = hf_file_seek_get_size(
+	int error_code = hf_file_get_size_seek(
 		function_name_pointer, file_pointer, path_pointer, out_file_size_pointer,
 		(out_file_pointer != NULL)
 	);
@@ -1643,3 +1787,31 @@ cleanup:
 	return error_code;
 #endif /* RF_BACKEND_WINDOWS */
 }
+
+#ifndef RF_BACKEND_WINDOWS
+static bool hf_is_files_same(
+		const char * restrict path_pointer_first, const char * restrict path_pointer_second
+	)
+{
+#	if defined(RF_BACKEND_STAT)
+
+	struct stat file_status_first, file_status_second;
+
+	if( stat( path_pointer_first, &file_status_first ) != 0 ||
+		stat( path_pointer_second,&file_status_second) != 0 )
+		return false;
+
+	return
+		file_status_first.st_dev == file_status_second.st_dev &&
+		file_status_first.st_ino == file_status_second.st_ino;
+
+#	else
+
+	if (*path_pointer_first == '.' && *(path_pointer_first + 1) == '/') path_pointer_first += 2;
+	if (*path_pointer_second== '.' && *(path_pointer_second+ 1) == '/') path_pointer_second+= 2;
+
+	return strcmp( path_pointer_first, path_pointer_second ) == 0;
+
+#	endif /* RF_BACKEND_STAT */
+}
+#endif /* RF_BACKEND_WINDOWS */
