@@ -13,6 +13,26 @@
  * limitations under the License.
  */
 
+/* Available user macro definition before including the header:
+ * - RF_FORCE_WINDOWS					: force Windows backend
+ * - RF_FORCE_FSEEKO					: force POSIX fseeko backend
+ * - RF_FORCE_STAT						: force POSIX stat backend
+ * - RF_FORCE_STANDARD					: force standard C backend
+ * - HF_ADD_MEMORY_MAP					: include mmap functions
+ */
+
+/* WARNING:
+ * 1. Negative returns
+ * negative return values report non-critical failures (like file failed to close);
+ * data already delivered through output parameters stays valid and becomes
+ * the caller's property, which the caller is responsible for freeing.
+ *
+ * 2. RF_BACKEND_STANDARD || RF_FORCE_STANDARD
+ *	1) directories may be treated as files
+ *	2) opening non-regular file may block
+ *	3) only checks whether filenames are the same (ignoring a leading ./)
+ */
+
 #pragma once
 
 #ifndef HANDLE_FILE_H
@@ -86,10 +106,12 @@ bool hf_file_is_exists( const char * restrict path_pointer );
  * Parameters:
  * path_pointer		- path to the object
  * out_data_pointer	- save result data
- * length_pointer	- save the amount of bytes read
+ * length_pointer	- save the amount of bytes read (may be NULL)
  *
  * Returns:
- * 0				- file allocated into the heap
+ * 0				- file is read;
+ *						on empty file out_data_pointer is NULL
+ *						otherwise it points to a heap-allocated NULL-terminated buffer
  * -1				- failed to close a file
  * > 0				- wrong parameters, read, save failed
  */
@@ -104,7 +126,8 @@ int hf_file_read( const char * restrict path_pointer, char * restrict * restrict
  * Returns:
  * 0						- file copied successfully
  * -1						- failed to close a file
- * > 0						- wrong parameters, open source/destination, read, write, copy failed
+ * > 0						- wrong parameters, open source/destination, read, write,
+ *								copy failed, source equal destination
  */
 int hf_file_copy( const char * restrict path_pointer_source, const char * restrict path_pointer_destination );
 /* Function:
