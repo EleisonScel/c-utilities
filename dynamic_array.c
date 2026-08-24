@@ -65,14 +65,15 @@ bool da_dynamic_array_shrink(
 	}
 
 	void * new_pointer = realloc( current_data_pointer, amount * item_size );
-	if ( new_pointer != NULL ) {
-		memcpy(
-			data_pointer,
-			&new_pointer,
-			sizeof( new_pointer )
-		);
-		*capacity_pointer	= amount;
-	}
+	if ( new_pointer == NULL )
+		return false;
+
+	memcpy(
+		data_pointer,
+		&new_pointer,
+		sizeof( new_pointer )
+	);
+	*capacity_pointer	= amount;
 
 	return true;
 }
