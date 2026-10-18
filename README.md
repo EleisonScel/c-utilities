@@ -70,11 +70,6 @@ OpenGL error checking.
 - `gl_get_error_string` - returns a string description for a given OpenGL error code.  
 > Requires OpenGL and GLEW.  
 
-### create_shader_program
-Create OpenGL shader program from vertex and fragment sources.
-- `csp_create_shader_program` - create a shader program from a single fragment and single vertex shader source code string.
-- `csp_create_shader_program_many_sources` - creates a program from one or more vertex and fragment source strings.
-
 ### lcg_random
 Fast and lightweight pseudo-random number generator with a minimal overhead, based on linear congruential algorithm and designed for unbiased statistical distribution.  
 > **Deterministic by default** - seeds are fixed, change it via lcg_set_random64 and lcg_set_random32.  
