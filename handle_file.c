@@ -137,10 +137,10 @@ static_assert_m(
 #	elif _FILE_OFFSET_BITS < 64
 #		ifndef RF_NO_WARNING_FILE_OFFSET_BITS
 #			if defined(_MSC_VER)
-#				pragma message("_FILE_OFFSET_BITS defined"\
+#				pragma message("_FILE_OFFSET_BITS defined "\
 					"and less than 64. Files larger than 2GB may fail to open.")
 #			else
-#				warning "_FILE_OFFSET_BITS defined"\
+#				warning "_FILE_OFFSET_BITS defined "\
 						"and less than 64. Files larger than 2GB may fail to open."
 #			endif
 #		endif /* RF_NO_WARNING_FILE_OFFSET_BITS */
