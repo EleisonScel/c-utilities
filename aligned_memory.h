@@ -14,6 +14,7 @@
  */
 
 #pragma once
+
 /* File:
  * aligned_memory.h
  *
