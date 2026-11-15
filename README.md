@@ -111,6 +111,17 @@ Portable safe file handling operations.
 > Support Windows, POSIX and standard backends. On windows safely handles UTF-8 paths, absolute path resulotion, UNC paths and long paths exceeding the standard (`MAX_PATH`) maximal length.    
 > Requires C99   
 
+### long_double_to_string
+Portable conversion of `long double` to a string in scientific notation.   
+- `ldts_long_double_to_string_static` - converts a value to its decimal representation.   
+- Output format: [-]d[.ddd...]e[-]ddd; mantissa normalized into `[1; 10)`, trailing zeroes trimmed, positive exponent without `+` and leading zeroes, `.` regardless of the current locale.   
+- Special values: `NaN`, `Inf`, `-Inf`, `0e0`, `-0e0`.   
+- Last digit rounded half-to-even.   
+- No heap allocation, no NULL check, no bounds check: the caller must provide buffer of at least `LDTS_LIMIT_LONG_DOUBLE_BUFFER` bytes.   
+> Supports `FLT_RADIX` in {2, 4, 8, 10, 16}.   
+> Returns number of characters written into a buffer (without '\0' terminator).   
+> Requires C99   
+
 ---
 
 **License**: Apache 2.0
