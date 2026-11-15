@@ -120,6 +120,7 @@ Portable conversion of `long double` to a string in scientific notation.
 - No heap allocation, no NULL check, no bounds check: the caller must provide buffer of at least `LDTS_LIMIT_LONG_DOUBLE_BUFFER` bytes.   
 > Supports `FLT_RADIX` in {2, 4, 8, 10, 16}.   
 > Returns number of characters written into a buffer (without '\0' terminator).   
+> Stack usage proportional to `long double` precision; ~5 KB for x87 on x86-64.   
 > Requires C99   
 
 ---
