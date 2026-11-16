@@ -95,7 +95,7 @@ Portable overflow-checked integer arithmetic operations without undefined or imp
 > Return `true` if overflow occurred, `false` on success.   
 > Use __builtin_<operation>_overflow or <stdckdint.h> if available otherwise portable manual check.   
 
-### handle file
+### handle_file
 Portable safe file handling operations.   
 - `hf_file_read` - reads a file into a heap-allocated buffer.   
 - `hf_file_write` - writes data to a file replacing original.   
@@ -121,6 +121,29 @@ Portable conversion of `long double` to a string in scientific notation.
 > Supports `FLT_RADIX` in {2, 4, 8, 10, 16}.   
 > Returns number of characters written into a buffer (without '\0' terminator).   
 > Stack usage proportional to `long double` precision; ~5 KB for x87 on x86-64.   
+> Requires C99   
+
+### ring_buffer
+Circular FIFO buffer for fixed-size elements with dynamic and static storage backends.
+**Storage-agnostic functions**
+- `rb_ring_buffer_pop` - pop out the first element of the ring buffer   
+- `rb_ring_buffer_peek`- peek at the first element of the ring buffer without removing it   
+- `rb_ring_buffer_peek_position` - peek at the index element of the ring buffer without removing it   
+- `rb_ring_buffer_push` - push an element to the ring buffer   
+- `rb_ring_buffer_discard` - discard the first element from the ring buffer   
+- `rb_ring_buffer_is_full` - check if the ring buffer is full   
+- `rb_ring_buffer_pop_copy` - pop out first element from the ring buffer and copy it to a given pointer   
+- `rb_ring_buffer_initialize_static` - initialize a ring buffer with an external memory block (static or dynamic), may wrap an already existing ring buffer state   
+- `rb_ring_buffer_amount_free` - get the amount of free slots in the ring buffer   
+**Heap-storage functions**
+- `rb_ring_buffer_destroy` - destroy dynamic ring buffer and free its memory   
+- `rb_ring_buffer_shrink` - shrink the ring buffer capacity to the exact amount of elements   
+- `rb_ring_buffer_create` - create a dynamic ring buffer   
+- `rb_ring_buffer_ensure_capacity` - ensure the ring buffer has at least the specified capacity   
+> Highly recommended to treat RB_Ring_Buffer as an opaque structure and do not access it manually   
+> rb_ring_buffer_create returns true if the arguments are correct, **CHECK** the out pointer for NULL to catch OOM   
+> **Thread-unsafe**   
+> rb_ring_buffer_push doesn't grow the buffer and returns false on full buffer   
 > Requires C99   
 
 ---
