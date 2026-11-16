@@ -127,7 +127,7 @@ bool rb_ring_buffer_is_full( const struct RB_Ring_Buffer * restrict ring_buffer_
  *
  * Parameters:
  * ring_buffer_pointer	- ring buffer pointer
- * data_pointer			- destination to copy the popped element to
+ * data_pointer			- destination to copy the popped element to; shall NOT point into the ring buffer storage
  *
  * Returns:
  * true					- element popped and copied
