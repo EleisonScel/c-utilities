@@ -228,7 +228,7 @@ bool rb_ring_buffer_shrink( struct RB_Ring_Buffer * restrict ring_buffer_pointer
  */
 bool rb_ring_buffer_create( struct RB_Ring_Buffer * restrict * restrict out_ring_buffer_pointer, size_t element_size, size_t capacity_desired, size_t capacity_minimal );
 /* Function:
- * ensure the ring buffer has at least the specific capacity
+ * ensure the ring buffer has at least the specified capacity
  *
  * Precondition:
  * ring_buffer_pointer	- isn't NULL
