@@ -14,10 +14,10 @@
  */
 
 /* Available user macro definition before including the header:
- * - RF_FORCE_WINDOWS					: force Windows backend
- * - RF_FORCE_FSEEKO					: force POSIX fseeko backend
- * - RF_FORCE_STAT						: force POSIX stat backend
- * - RF_FORCE_STANDARD					: force standard C backend
+ * - HF_FORCE_WINDOWS					: force Windows backend
+ * - HF_FORCE_FSEEKO					: force POSIX fseeko backend
+ * - HF_FORCE_STAT						: force POSIX stat backend
+ * - HF_FORCE_STANDARD					: force standard C backend
  * - HF_ADD_MEMORY_MAP					: include mmap functions
  */
 
@@ -27,7 +27,7 @@
  * data already delivered through output parameters stays valid and becomes
  * the caller's property, which the caller is responsible for freeing.
  *
- * 2. RF_BACKEND_STANDARD || RF_FORCE_STANDARD
+ * 2. HF_BACKEND_STANDARD || HF_FORCE_STANDARD
  *	1) directories may be treated as files
  *	2) opening non-regular file may block
  *	3) only checks whether filenames are the same (ignoring a leading ./)
