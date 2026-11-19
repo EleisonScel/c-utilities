@@ -174,14 +174,14 @@ bool am_aligned_malloc( void * restrict out_buffer_pointer, size_t alignment, si
 	struct AM_Alignment_Header_Info header;
 #endif
 
-	if( assert_check_m(size != 0, "Amount of bytes for allocation shouldn't be zero" ) == false||
+	if(	assert_check_m(size != 0, "Amount of bytes for allocation shouldn't be zero") == false ||
 		assert_check_m(alignment!= 0, "Alignment shouldn't be zero, it's a divider" ) == false )
 		goto out;
 
 #if defined AM_BACKEND_STANDARD || defined AM_BACKEND_POSIX || defined AM_BACKEND_WINDOWS ||\
 	(defined AM_BACKEND_FALLBACK && AM_ALIGN_BITWISE == 1)
 
-	if( assert_check_mf(
+	if(	assert_check_mf(
 			(alignment & (alignment - 1)) == 0,
 			"Alignment must be a power of two for this backend (alignment: %zu)", alignment
 		) == false )
@@ -189,7 +189,7 @@ bool am_aligned_malloc( void * restrict out_buffer_pointer, size_t alignment, si
 
 #	ifdef AM_BACKEND_POSIX
 
-	if( assert_check_mf(
+	if(	assert_check_mf(
 			alignment % sizeof(void *) == 0,
 			"Alignment must be a multiple of size of pointer (alignment: %zu)", alignment
 		) == false )
@@ -200,40 +200,40 @@ bool am_aligned_malloc( void * restrict out_buffer_pointer, size_t alignment, si
 
 #ifdef AM_BACKEND_WINDOWS
 
-	if( sa_ovf_add_size_t( size, AM_HEADER_SIZE, &size_to_allocate ) == true )
+	if(	sa_ovf_add_size_t( size, AM_HEADER_SIZE, &size_to_allocate ) == true )
 		goto out;
 
 #elif defined AM_BACKEND_STANDARD || defined AM_BACKEND_POSIX
 
-	if( sa_ovf_round_up_size_t(
+	if(	sa_ovf_round_up_size_t(
 			AM_HEADER_SIZE, alignment, &header_information_size_aligned
 		) == true ||
 		sa_ovf_add_size_t( size, header_information_size_aligned, &size_to_allocate ) == true )
 		goto out;
 
-	if( size_to_allocate > SIZE_MAX - (alignment - 1) )
+	if(	size_to_allocate > SIZE_MAX - (alignment - 1) )
 		goto out;
 
 #else /* FALLBACK */
 
-	if( assert_check_mf(
+	if(	assert_check_mf(
 			alignment <= SIZE_MAX - AM_HEADER_SIZE + 1,
 			"Allocation alignment must leave space for the information "
 			"(alignment: %zu , information: %zu)", alignment, AM_HEADER_SIZE
 		) == false )
 		goto out;
 
-	if(sa_ovf_add_size_t(alignment - 1, AM_HEADER_SIZE, &header_information_size_required)==true)
+	if(sa_ovf_add_size_t(alignment - 1, AM_HEADER_SIZE, &header_information_size_required) == true)
 		goto out;
 
-	if( sa_ovf_add_size_t( header_information_size_required, size, &size_to_allocate ) == true )
+	if(	sa_ovf_add_size_t( header_information_size_required, size, &size_to_allocate ) == true )
 		goto out;
 
 #endif /* AM_BACKEND_WINDOWS */
 
 	no_error_happened = true;
 	result_pointer = am_aligned_allocation( alignment, size, &raw_memory_pointer );
-	if ( result_pointer == NULL )
+	if(	result_pointer == NULL )
 		goto out;
 
 	assert_m(
@@ -281,7 +281,7 @@ bool am_aligned_malloc_array(
 {
 	size_t total_bytes = sa_check_array_bounds( elements_amount, element_size );
 
-	if ( total_bytes == 0 ) {
+	if(	total_bytes == 0 ) {
 		void * pointer_temporary = NULL;
 		memcpy( out_buffer_pointer, &pointer_temporary, sizeof(void *) );
 		return false;
@@ -299,16 +299,16 @@ bool am_aligned_calloc(
 	size_t total_bytes = sa_check_array_bounds( elements_amount, element_size );
 
 	void * pointer_temporary = NULL;
-	if ( total_bytes == 0 ) {
+	if(	total_bytes == 0 ) {
 		memcpy( out_buffer_pointer, &pointer_temporary, sizeof(void *) );
 		return false;
 	}
 
-	if ( am_aligned_malloc( out_buffer_pointer, alignment, total_bytes ) == false )
+	if(	am_aligned_malloc( out_buffer_pointer, alignment, total_bytes ) == false )
 		return false;
 
 	memcpy( &pointer_temporary, out_buffer_pointer, sizeof(void *) );
-	if ( pointer_temporary != NULL )
+	if(	pointer_temporary != NULL )
 		memset( pointer_temporary, 0, total_bytes );
 
 	return true;
@@ -325,7 +325,7 @@ enum sa_allocation_status am_aligned_recalloc(
 		out_buffer_pointer, pointer, size_new
 	);
 
-	if( result_status == SA_ALLOC_SUCCESS && size_new > size_to_preserve ) {
+	if(	result_status == SA_ALLOC_SUCCESS && size_new > size_to_preserve ) {
 		void * new_pointer = NULL;
 		memcpy( &new_pointer, out_buffer_pointer, sizeof(void *) );
 		memset(
@@ -345,7 +345,7 @@ enum sa_allocation_status am_aligned_recalloc_array(
 {
 	size_t size_old;
 	size_t total_bytes = sa_check_array_bounds( elements_amount, element_size );
-	if( total_bytes == 0 ||
+	if(	total_bytes == 0 ||
 		sa_ovf_mul_size_t( element_size, elements_to_preserve, &size_old ) == true )
 		return SA_ALLOC_OVERFLOW;
 
@@ -358,7 +358,7 @@ enum sa_allocation_status am_aligned_realloc_array(
 	)
 {
 	size_t total_bytes = sa_check_array_bounds( elements_amount, element_size );
-	if ( total_bytes == 0 )
+	if(	total_bytes == 0 )
 		return SA_ALLOC_OVERFLOW;
 
 	return am_aligned_realloc( out_buffer_pointer, pointer, total_bytes );
@@ -368,7 +368,7 @@ enum sa_allocation_status am_aligned_realloc(
 		void * out_buffer_pointer, void * pointer, size_t size_new
 	)
 {
-	if( assert_check_m( pointer != NULL, "No memory block found for reallocation" ) == false ||
+	if(	assert_check_m( pointer != NULL, "No memory block found for reallocation" ) == false ||
 		assert_check_m( size_new != 0, "Reallocation to a zero size is not available") == false )
 		return SA_ALLOC_OVERFLOW;
 
@@ -408,13 +408,13 @@ static enum sa_allocation_status am_aligned_realloc_windows(
 	size_t size_to_allocate = 0;
 	struct AM_Alignment_Header_Info header_new;
 
-	if ( sa_ovf_add_size_t( size_new, AM_HEADER_SIZE, &size_to_allocate ) == true )
+	if(	sa_ovf_add_size_t( size_new, AM_HEADER_SIZE, &size_to_allocate ) == true )
 		return SA_ALLOC_OVERFLOW;
 
 	raw_memory_pointer_new = _aligned_offset_realloc(
 		raw_memory_pointer_old, size_to_allocate, alignment, AM_HEADER_SIZE
 	);
-	if ( raw_memory_pointer_new == NULL )
+	if(	raw_memory_pointer_new == NULL )
 		return SA_ALLOC_FAILURE;
 
 	header_new = (struct AM_Alignment_Header_Info) { .alignment = alignment };
@@ -432,8 +432,7 @@ static enum sa_allocation_status am_aligned_realloc_standard_posix(
 		size_t size_old, size_t size_new, size_t alignment
 	)
 {
-	void
-		* new_pointer = NULL,
+	void* new_pointer = NULL,
 		* result_pointer = NULL,
 		* raw_memory_pointer = NULL;
 	size_t
@@ -441,14 +440,14 @@ static enum sa_allocation_status am_aligned_realloc_standard_posix(
 		header_information_size_aligned = 0;
 	struct AM_Alignment_Header_Info header_new;
 
-	if( sa_ovf_round_up_size_t(
+	if(	sa_ovf_round_up_size_t(
 			AM_HEADER_SIZE, alignment, &header_information_size_aligned
 		) == true ||
 		sa_ovf_add_size_t( size_new, header_information_size_aligned, &size_to_allocate) == true)
 		return SA_ALLOC_OVERFLOW;
 
 	new_pointer = am_aligned_allocation( alignment, size_new, &raw_memory_pointer );
-	if ( new_pointer == NULL )
+	if(	new_pointer == NULL )
 		return SA_ALLOC_FAILURE;
 
 	assert_m(
@@ -503,14 +502,14 @@ static enum sa_allocation_status am_aligned_realloc_fallback(
 	ptrdiff_t offset_old = (char *) pointer - (char *) raw_memory_pointer_old;
 	struct AM_Alignment_Header_Info header_new;
 
-	if( sa_ovf_add_size_t(
+	if(	sa_ovf_add_size_t(
 			alignment - 1, AM_HEADER_SIZE, &header_information_size_required
 		) == true ||
 		sa_ovf_add_size_t(header_information_size_required, size_new, &size_to_allocate) == true)
 		return SA_ALLOC_OVERFLOW;
 
 	raw_memory_pointer_new = realloc( raw_memory_pointer_old, size_to_allocate );
-	if ( raw_memory_pointer_new == NULL )
+	if(	raw_memory_pointer_new == NULL )
 		return SA_ALLOC_FAILURE;
 
 	address = (uintptr_t) raw_memory_pointer_new + (uintptr_t) AM_HEADER_SIZE;
@@ -529,7 +528,7 @@ static enum sa_allocation_status am_aligned_realloc_fallback(
 
 	data_source_pointer = (void *)((uintptr_t) raw_memory_pointer_new + (uintptr_t) offset_old );
 
-	if( aligned != (uintptr_t) data_source_pointer )
+	if(	aligned != (uintptr_t) data_source_pointer )
 		memmove(
 			(void *) aligned,
 			data_source_pointer,
@@ -563,7 +562,7 @@ static enum sa_allocation_status am_aligned_realloc_fallback(
 #endif /* AM_NO_REALLOC */
 
 void am_aligned_free( void * restrict pointer ) {
-	if ( assert_check_m( pointer != NULL, "No memory block to free found" ) == false )
+	if(	assert_check_m( pointer != NULL, "No memory block to free found" ) == false )
 		return;
 
 #ifdef AM_BACKEND_WINDOWS
@@ -634,7 +633,7 @@ static void * am_aligned_allocation(
 	assert_m( size_to_allocate >= size, "Allocation size overflow" );
 
 	raw_memory_pointer = malloc( size_to_allocate );
-	if ( raw_memory_pointer == NULL ) return NULL;
+	if(	raw_memory_pointer == NULL ) return NULL;
 
 	/*  no overflow possible after malloc */
 	uintptr_t address = (uintptr_t)raw_memory_pointer + (uintptr_t)AM_HEADER_SIZE;
@@ -662,7 +661,7 @@ static void * am_aligned_allocation(
 		alignment,
 		AM_HEADER_SIZE
 	);
-	if ( raw_memory_pointer == NULL ) return NULL;
+	if(	raw_memory_pointer == NULL ) return NULL;
 
 	*out_raw_memory_pointer = raw_memory_pointer;
 
@@ -682,9 +681,9 @@ static void * am_aligned_allocation(
 
 	size_t to_allocate = size + header_information_size_aligned;
 
-#		if (__STDC_VERSION__ + 0L) < 202311L
+#		if(__STDC_VERSION__ + 0L) < 202311L
 
-	if( assert_check_m(
+	if(	assert_check_m(
 			to_allocate <= SIZE_MAX - (alignment - 1),
 			"Allocation size must leave space for the information"
 		) == false )
@@ -695,12 +694,12 @@ static void * am_aligned_allocation(
 #		endif /* __STDC_VERSION__ < 202311L */
 
 	raw_memory_pointer = aligned_alloc( alignment, to_allocate );
-	if ( raw_memory_pointer == NULL )
+	if(	raw_memory_pointer == NULL )
 		return NULL;
 
 #	else /* AM_BACKEND_POSIX */
 
-	if ( posix_memalign(
+	if(	posix_memalign(
 			&raw_memory_pointer, alignment, size + header_information_size_aligned ) != 0
 		) return NULL;
 
