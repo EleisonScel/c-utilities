@@ -27,6 +27,11 @@
 #include <stdint.h>		/* SIZE_MAX	*/
 #include <stdbool.h>	/* bool		*/
 
+#if(defined AM_FORCE_WINDOWS + defined AM_FORCE_POSIX + defined AM_FORCE_C11 +\
+	defined AM_FORCE_FALLBACK) > 1
+#	error "Multiple AM_FORCE_* macros defined. Please select only one backend."
+#endif
+
 /* Logic to choose the alignment backend
  *
  * Available backends and its usage (in order of preferences unless forces):
@@ -71,10 +76,10 @@
 #		error "No aligned allocation method available"
 #	endif /* UINTPTR_MAX */
 	/* just an extra check since that's guaranteed */
-	static_assert_m(
-		sizeof(uintptr_t) >= sizeof(void *),
-		"Unsigned integer pointer size must be wide enough to hold the size of a pointer"
-	);
+static_assert_m(
+	sizeof(uintptr_t) >= sizeof(void *),
+	"Unsigned integer pointer size must be wide enough to hold the size of a pointer"
+);
 #endif /* AM_BACKEND_FALLBACK */
 
 /* corresponding include */
@@ -93,10 +98,10 @@
 #	endif
 #	define AM_ALIGN_BITWISE 0
 #else
-	static_assert_m(
-		(sizeof(void *) & (sizeof(void *) - (size_t) 1)) == (size_t) 0,
-		"The size of a pointer must be a power of two"
-	);
+static_assert_m(
+	(sizeof(void *) & (sizeof(void *) - (size_t) 1)) == (size_t) 0,
+	"The size of a pointer must be a power of two"
+);
 #	define AM_ALIGN_BITWISE 1
 #endif
 
@@ -104,8 +109,8 @@
  * stored right before user-visible pointer
  */
 #if defined AM_NO_REALLOC && defined AM_BACKEND_WINDOWS
-#	define			AM_HAS_HEADER						0
-#	define AM_HEADER_SIZE 0
+#	define AM_HAS_HEADER	0
+#	define AM_HEADER_SIZE	0
 #else /* AM_NO_REALLOC, AM_BACKEND_WINDOWS */
 struct AM_Alignment_Header_Info {
 #	ifndef AM_BACKEND_WINDOWS
