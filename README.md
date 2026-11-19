@@ -19,9 +19,9 @@ Safe array allocation with checks for overflow in the required memory size.
 - `sa_calloc_array` - safe version of calloc with array bounds checking.
 - `sa_realloc_array` - safe version of realloc with array bounds checking.
 - `sa_recalloc_array` - safe version of realloc with nullification of a new data with array bounds checking.
-> `sa_malloc_array` and `sa_calloc_array` returns false on invalid or overflow arguments and true if memory allocation was attempted; check the output pointer for NULL to know if the allocation is successful.
+> `sa_malloc_array` and `sa_calloc_array` returns false on invalid or overflow arguments and true if memory allocation was attempted; check the output pointer for NULL to know if the allocation is successful.   
 > `sa_re*` functions returns `enum sa_allocation_status`: `SA_ALLOC_OVERFLOW (-1)`, `SA_ALLOC_SUCCESS (0)`, `SA_ALLOC_FAILURE (1)`; on allocation failure, the original memory pointer remains valid.   
-> Requires C99.
+> Requires C99.   
 
 ### assert_m
 Flexible assert macros:
