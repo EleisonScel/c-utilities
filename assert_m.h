@@ -21,13 +21,29 @@
 #ifdef NDEBUG
 
 #	define assert_m(			condition, message		) ((void) 0)
-#	define assert_mf(			condition, format, ...	) ((void) 0)
 #	define assert_fail_m(		message					) ((void) 0)
-#	define assert_fail_mf(		message, ...			) ((void) 0)
 #	define assert_check_m(		condition, message		) ((condition) ? 1 : 0 )
-#	define assert_check_mf(		condition, format, ...	) ((condition) ? 1 : 0 )
 #	define assert_fail_check_m(	message					) (1)
-#	define assert_fail_check_mf(format, ...				) (1)
+
+#	if defined __STDC_VERSION__ && (__STDC_VERSION__ + 0L) >= 199901L
+
+#		define assert_mf(			condition, format, ...	) ((void) 0)
+#		define assert_fail_mf(		message, ...			) ((void) 0)
+#		define assert_check_mf(		condition, format, ...	) ((condition) ? 1 : 0 )
+#		define assert_fail_check_mf(format, ...				) (1)
+
+#	else
+
+#		define assert_mf(			condition, format	)\
+				assert_mf_requires_variadic_preprocessor(			condition, format	)
+#		define assert_fail_mf(		message				)\
+				assert_fail_mf_requires_variadic_preprocessor(		message				)
+#		define assert_check_mf(		condition, message	)\
+				assert_check_mf_requires_variadic_preprocessor(		condition, message	)
+#		define assert_fail_check_mf(message				)\
+				assert_fail_check_mf_requires_variadic_preprocessor(message				)
+
+#	endif /* __STDC_VERSION__ >= 199901L */
 
 #else
 
@@ -179,7 +195,7 @@
 #	else /* __STDC_VERSION__ >= 199901L */
 
 #		define assert_mf(			condition, format	)\
-				assert_mf_requires_variadic_preprocessor(			condition, message	)
+				assert_mf_requires_variadic_preprocessor(			condition, format	)
 #		define assert_fail_mf(		message				)\
 				assert_fail_mf_requires_variadic_preprocessor(		message				)
 #		define assert_check_mf(		condition, message	)\
