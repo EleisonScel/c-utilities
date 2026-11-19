@@ -15,10 +15,11 @@
 
 #include "aligned_memory.h"
 
-#include "assert_m.h"			/* assert_m				*/
-#include "safe_round.h"			/* sa_ovf_round_up_size_t*/
-#include "safe_addition.h"		/* sa_ovf_add_size_t	*/
-#include "safe_alloc.h"			/* sa_check_array_bounds*/
+#include "assert_m.h"			/* assert_m					*/
+#include "safe_round.h"			/* sa_ovf_round_up_size_t	*/
+#include "safe_alloc.h"			/* sa_check_array_bounds	*/
+#include "safe_addition.h"		/* sa_ovf_add_size_t		*/
+#include "safe_multiplication.h"/* sa_ovf_mul_size_t		*/
 
 #include <string.h>		/* memcpy	*/
 
