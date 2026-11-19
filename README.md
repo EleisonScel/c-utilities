@@ -12,6 +12,17 @@ Supports Windows, POSIX, C11 and fallback using standard malloc.
 > In C11 the size passed to `am_aligned_malloc` must be a multiple of alignment. The **library automatically rounds up** the size when using the C11 backend.  
 > In C23 this requirement is removed. To avoid unnecessary overhead, the library does **not** round the size when compiled for C23 support. If your code relies on rounding, ensure the size is a multiple of alignment explicitly.  
 
+### safe_alloc
+Safe array allocation with checks for overflow in the required memory size.   
+- `sa_check_array_bounds` - validate the allocation size.
+- `sa_malloc_array` - safe version of malloc with array bounds checking.
+- `sa_calloc_array` - safe version of calloc with array bounds checking.
+- `sa_realloc_array` - safe version of realloc with array bounds checking.
+- `sa_recalloc_array` - safe version of realloc with nullification of a new data with array bounds checking.
+> `sa_malloc_array` and `sa_calloc_array` returns false on invalid or overflow arguments and true if memory allocation was attempted; check the output pointer for NULL to know if the allocation is successful.
+> `sa_re*` functions returns `enum sa_allocation_status`: `SA_ALLOC_OVERFLOW (-1)`, `SA_ALLOC_SUCCESS (0)`, `SA_ALLOC_FAILURE (1)`; on allocation failure, the original memory pointer remains valid.   
+> Requires C99.
+
 ### assert_m
 Flexible assert macros:
 - `assert_m(condition, message)` - assertion with a string message.  
